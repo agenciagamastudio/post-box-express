@@ -123,6 +123,168 @@ export type Database = {
           },
         ]
       }
+      instagram_connections: {
+        Row: {
+          access_token: string | null
+          client_id: string
+          connected_by: string | null
+          created_at: string
+          id: string
+          ig_user_id: string | null
+          ig_username: string | null
+          insights_cache: Json | null
+          insights_period: string | null
+          insights_updated_at: string | null
+          is_monitored: boolean
+          last_comments_sync: string | null
+          last_dms_sync: string | null
+          page_id: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string | null
+          client_id: string
+          connected_by?: string | null
+          created_at?: string
+          id?: string
+          ig_user_id?: string | null
+          ig_username?: string | null
+          insights_cache?: Json | null
+          insights_period?: string | null
+          insights_updated_at?: string | null
+          is_monitored?: boolean
+          last_comments_sync?: string | null
+          last_dms_sync?: string | null
+          page_id?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string | null
+          client_id?: string
+          connected_by?: string | null
+          created_at?: string
+          id?: string
+          ig_user_id?: string | null
+          ig_username?: string | null
+          insights_cache?: Json | null
+          insights_period?: string | null
+          insights_updated_at?: string | null
+          is_monitored?: boolean
+          last_comments_sync?: string | null
+          last_dms_sync?: string | null
+          page_id?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instagram_comments: {
+        Row: {
+          account_id: string
+          author_avatar_url: string | null
+          author_username: string | null
+          comment_id: string
+          created_at: string
+          id: string
+          likes_count: number
+          post_id: string
+          replied_to_id: string | null
+          synced_at: string
+          text: string | null
+        }
+        Insert: {
+          account_id: string
+          author_avatar_url?: string | null
+          author_username?: string | null
+          comment_id: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          post_id: string
+          replied_to_id?: string | null
+          synced_at?: string
+          text?: string | null
+        }
+        Update: {
+          account_id?: string
+          author_avatar_url?: string | null
+          author_username?: string | null
+          comment_id?: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          post_id?: string
+          replied_to_id?: string | null
+          synced_at?: string
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_comments_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "instagram_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instagram_dms: {
+        Row: {
+          account_id: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_from_me: boolean
+          sender_avatar_url: string | null
+          sender_username: string | null
+          synced_at: string
+          text: string | null
+        }
+        Insert: {
+          account_id: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_from_me?: boolean
+          sender_avatar_url?: string | null
+          sender_username?: string | null
+          synced_at?: string
+          text?: string | null
+        }
+        Update: {
+          account_id?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_from_me?: boolean
+          sender_avatar_url?: string | null
+          sender_username?: string | null
+          synced_at?: string
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_dms_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "instagram_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_comments: {
         Row: {
           body: string
@@ -518,3 +680,8 @@ export const Constants = {
     },
   },
 } as const
+
+// Aliases de conveniência (Instagram Monitoring — Fase 1)
+export type InstagramAccount = Tables<"instagram_connections">
+export type InstagramComment = Tables<"instagram_comments">
+export type InstagramDM = Tables<"instagram_dms">
