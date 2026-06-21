@@ -2,7 +2,7 @@
 // Sincroniza dados com Supabase (instagram_comments, instagram_dms).
 
 import { Router } from "express";
-import { supabase } from "./supabase.js";
+import { admin } from "./supabase.js";
 import {
   fetchInsights,
   fetchComments,
@@ -25,7 +25,7 @@ router.get("/insights/:accountId", async (req, res) => {
     const { period = "7days" } = req.query;
 
     // 1. Buscar conexão Instagram do Supabase
-    const { data: conn, error } = await supabase
+    const { data: conn, error } = await admin
       .from("instagram_connections")
       .select("id, ig_user_id, access_token")
       .eq("id", accountId)
@@ -65,7 +65,7 @@ router.get("/comments/:accountId", async (req, res) => {
     const { limit = 25 } = req.query;
 
     // 1. Buscar conexão
-    const { data: conn, error } = await supabase
+    const { data: conn, error } = await admin
       .from("instagram_connections")
       .select("id, ig_user_id, access_token, client_id")
       .eq("id", accountId)
@@ -112,7 +112,7 @@ router.get("/dms/:accountId", async (req, res) => {
     const { accountId } = req.params;
 
     // 1. Buscar conexão
-    const { data: conn, error } = await supabase
+    const { data: conn, error } = await admin
       .from("instagram_connections")
       .select("id, ig_user_id, access_token")
       .eq("id", accountId)
@@ -168,7 +168,7 @@ router.post("/comments/:commentId/reply", async (req, res) => {
     }
 
     // Buscar token
-    const { data: conn, error } = await supabase
+    const { data: conn, error } = await admin
       .from("instagram_connections")
       .select("access_token")
       .eq("id", accountId)
@@ -202,7 +202,7 @@ router.post("/dms/:conversationId/send", async (req, res) => {
     }
 
     // Buscar token
-    const { data: conn, error } = await supabase
+    const { data: conn, error } = await admin
       .from("instagram_connections")
       .select("access_token")
       .eq("id", accountId)
