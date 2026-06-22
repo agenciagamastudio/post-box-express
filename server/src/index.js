@@ -6,11 +6,21 @@ import { exchangeCodeForConnection, buildAuthUrl } from "./instagram.js";
 import { instagramAccountsRouter } from "./instagram-accounts.js";
 import instagramMonitoringRouter from "./instagram-monitoring.js";
 import { admin } from "./supabase.js";
+import {
+  rateLimitMiddleware,
+  loggingMiddleware,
+  validateQueryParams,
+  timeoutMiddleware,
+  errorHandler,
+} from "./middleware.js";
 
 const APP_URL = process.env.APP_URL || "http://localhost:8080";
 
 const app = express();
 app.use(express.json());
+app.use(loggingMiddleware);
+app.use(rateLimitMiddleware);
+app.use(timeoutMiddleware(30000));
 
 // CORS — permite o frontend (8080) e páginas públicas chamarem este backend.
 app.use((req, res, next) => {
@@ -20,6 +30,9 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+// Validação de query params
+app.use(validateQueryParams);
 
 const PORT = process.env.PORT || 8787;
 const CRON = process.env.SCHEDULER_CRON || "*/1 * * * *";
@@ -255,6 +268,9 @@ cron.schedule("0 3 * * *", async () => {
   const r = await runTokenRefresh();
   if (r.refreshed) console.log(`[token-refresh] ${new Date().toISOString()}`, r);
 });
+
+// Error handler global (deve ser o último middleware)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`GamaGit server on http://localhost:${PORT} | mock=${process.env.PUBLISH_MOCK} | cron="${CRON}"`);
