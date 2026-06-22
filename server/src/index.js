@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cron from "node-cron";
+import crypto from "crypto";
 import { runScheduler, runTokenRefresh, publishNow } from "./scheduler.js";
 import { exchangeCodeForConnection, buildAuthUrl } from "./instagram.js";
 import { instagramAccountsRouter } from "./instagram-accounts.js";
@@ -211,6 +212,31 @@ app.get("/auth/instagram/callback", async (req, res) => {
   } catch (err) {
     console.error("[oauth callback]", err.message);
     res.redirect(`${APP_URL}/clientes?ig=error&msg=${encodeURIComponent(err.message)}`);
+  }
+});
+
+// Gera um novo link do portal do cliente (ou reaproveita se já existe).
+// POST /api/client-portal-link — requer client_id no body.
+app.post("/api/client-portal-link", async (req, res) => {
+  try {
+    const { client_id } = req.body || {};
+    if (!client_id) return res.status(400).json({ error: "Faltou client_id" });
+
+    // Tenta upsert: se já existe, reaproveita; se não, cria novo com UUID
+    const token = crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    const { data, error } = await admin
+      .from("client_portal_links")
+      .upsert({ client_id: String(client_id), token }, { onConflict: "client_id" })
+      .select("token")
+      .single();
+
+    if (error) throw new Error(error.message);
+    const url = `${APP_URL}/portal/${data.token}`;
+    res.json({ ok: true, token: data.token, url });
+  } catch (err) {
+    console.error("[client-portal-link]", err.message);
+    res.status(500).json({ ok: false, error: err.message });
   }
 });
 

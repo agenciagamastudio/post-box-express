@@ -152,19 +152,22 @@ function Integracoes() {
   });
 
   const portalLink = async () => {
-    // Gera (ou reaproveita) o link do portal do cliente (calendário + status).
-    const { data, error } = await supabase
-      .from("client_portal_links")
-      .upsert({ client_id: clientId }, { onConflict: "client_id" })
-      .select("token")
-      .single();
-    if (error) return toast.error(error.message);
-    const url = `${window.location.origin}/portal/${data.token}`;
     try {
-      await navigator.clipboard.writeText(url);
-      toast.success("Link do portal copiado — envie para o cliente");
-    } catch {
-      toast.success(url);
+      const res = await fetch("http://localhost:8787/api/client-portal-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId }),
+      });
+      if (!res.ok) throw new Error("Falha ao gerar link");
+      const { url } = await res.json();
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("Link do portal copiado — envie para o cliente");
+      } catch {
+        toast.success(`Link: ${url}`);
+      }
+    } catch (err) {
+      toast.error("Erro ao gerar link do portal");
     }
   };
 
