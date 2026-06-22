@@ -34,7 +34,9 @@ function Kanban() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("id,title,caption,cover_url,status,network,format,scheduled_at,published_at,clients(name,color),post_reviews(comment,status,reviewer_name,created_at)")
+        .select(
+          "id,title,caption,cover_url,status,network,format,scheduled_at,published_at,clients(name,color),post_reviews(comment,status,reviewer_name,created_at)",
+        )
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -43,7 +45,10 @@ function Kanban() {
 
   const move = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.from("posts").update({ status: status as any }).eq("id", id);
+      const { error } = await supabase
+        .from("posts")
+        .update({ status: status as any })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -60,9 +65,16 @@ function Kanban() {
   };
 
   const resend = async (postId: string) => {
-    const { error: e1 } = await supabase.from("posts").update({ status: "aprovacao" }).eq("id", postId);
+    const { error: e1 } = await supabase
+      .from("posts")
+      .update({ status: "aprovacao" })
+      .eq("id", postId);
     if (e1) return toast.error(e1.message);
-    const { data, error } = await supabase.from("post_reviews").insert({ post_id: postId }).select("token").single();
+    const { data, error } = await supabase
+      .from("post_reviews")
+      .insert({ post_id: postId })
+      .select("token")
+      .single();
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["posts"] });
     setDetail(null);
@@ -96,7 +108,17 @@ function Kanban() {
       <PageHeader
         title="Quadro de posts"
         description="Arraste mentalmente — ou use o botão para mudar status."
-        action={<Button onClick={() => { setEditId(null); setOpen(true); }}><Plus className="mr-2 h-4 w-4" />Novo post</Button>}
+        action={
+          <Button
+            onClick={() => {
+              setEditId(null);
+              setOpen(true);
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Novo post
+          </Button>
+        }
       />
       <div className="mt-6 grid gap-3 overflow-x-auto md:grid-cols-3 xl:grid-cols-6">
         {COLS.map((col) => {
@@ -109,17 +131,31 @@ function Kanban() {
               </div>
               <div className="space-y-2">
                 {list.map((p) => (
-                  <Card key={p.id} className="cursor-pointer p-3 transition hover:ring-1 hover:ring-primary/40" onClick={() => setDetail(p as any)}>
+                  <Card
+                    key={p.id}
+                    className="cursor-pointer p-3 transition hover:ring-1 hover:ring-primary/40"
+                    onClick={() => setDetail(p as any)}
+                  >
                     <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full" style={{ background: (p.clients as any)?.color ?? "#A78BFA" }} />
-                      <span className="text-xs text-muted-foreground">{(p.clients as any)?.name}</span>
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{ background: (p.clients as any)?.color ?? "#A78BFA" }}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {(p.clients as any)?.name}
+                      </span>
                     </div>
                     <div className="mt-1 line-clamp-2 text-sm font-medium">{p.title}</div>
                     <div className="mt-2 flex items-center gap-2 text-[10px] uppercase text-muted-foreground">
                       <span>{p.network}</span>·<span>{p.format}</span>
                     </div>
                     {(() => {
-                      const reviews = ((p as any).post_reviews ?? []) as Array<{ comment: string | null; status: string; reviewer_name: string | null; created_at: string }>;
+                      const reviews = ((p as any).post_reviews ?? []) as Array<{
+                        comment: string | null;
+                        status: string;
+                        reviewer_name: string | null;
+                        created_at: string;
+                      }>;
                       const change = reviews
                         .filter((r) => r.status === "changes_requested" && r.comment)
                         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
@@ -127,7 +163,8 @@ function Kanban() {
                       return (
                         <div className="mt-2 rounded-md border border-destructive/30 bg-destructive/10 p-2 text-xs">
                           <div className="mb-0.5 flex items-center gap-1 font-medium text-destructive">
-                            <MessageSquare className="h-3 w-3" /> Ajuste pedido{change.reviewer_name ? ` por ${change.reviewer_name}` : ""}
+                            <MessageSquare className="h-3 w-3" /> Ajuste pedido
+                            {change.reviewer_name ? ` por ${change.reviewer_name}` : ""}
                           </div>
                           <div className="text-foreground">"{change.comment}"</div>
                         </div>
@@ -136,13 +173,23 @@ function Kanban() {
                     <select
                       value={p.status}
                       onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => { e.stopPropagation(); move.mutate({ id: p.id, status: e.target.value }); }}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        move.mutate({ id: p.id, status: e.target.value });
+                      }}
                       className="mt-2 w-full rounded-md border border-border bg-background px-2 py-1 text-xs"
                     >
-                      {COLS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                      {COLS.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.label}
+                        </option>
+                      ))}
                     </select>
                     <button
-                      onClick={(e) => { e.stopPropagation(); approvalLink(p.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        approvalLink(p.id);
+                      }}
                       className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
                     >
                       <Link2 className="h-3 w-3" /> Link de aprovação
@@ -159,7 +206,14 @@ function Kanban() {
           );
         })}
       </div>
-      <PostDialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditId(null); }} postId={editId} />
+      <PostDialog
+        open={open}
+        onOpenChange={(v) => {
+          setOpen(v);
+          if (!v) setEditId(null);
+        }}
+        postId={editId}
+      />
       <PostDetailDialog
         post={detail}
         open={!!detail}

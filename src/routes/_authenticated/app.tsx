@@ -16,7 +16,9 @@ function Dashboard() {
       const { data, error } = await supabase.from("posts").select("status");
       if (error) throw error;
       const c = { rascunho: 0, aprovacao: 0, ajuste: 0, aprovado: 0, agendado: 0, publicado: 0 };
-      data.forEach((p) => { c[p.status as keyof typeof c]++; });
+      data.forEach((p) => {
+        c[p.status as keyof typeof c]++;
+      });
       return c;
     },
   });
@@ -36,10 +38,20 @@ function Dashboard() {
   });
 
   const cards = [
-    { label: "Rascunhos", value: counts?.rascunho ?? 0, icon: FileEdit, color: "text-muted-foreground" },
+    {
+      label: "Rascunhos",
+      value: counts?.rascunho ?? 0,
+      icon: FileEdit,
+      color: "text-muted-foreground",
+    },
     { label: "Em aprovação", value: counts?.aprovacao ?? 0, icon: Clock, color: "text-warning" },
     { label: "Aprovados", value: counts?.aprovado ?? 0, icon: CheckCircle2, color: "text-success" },
-    { label: "Agendados", value: counts?.agendado ?? 0, icon: CalendarClock, color: "text-primary" },
+    {
+      label: "Agendados",
+      value: counts?.agendado ?? 0,
+      icon: CalendarClock,
+      color: "text-primary",
+    },
   ];
 
   return (
@@ -60,20 +72,27 @@ function Dashboard() {
       <div className="mt-8">
         <h2 className="font-display text-lg font-semibold">Próximos agendamentos</h2>
         <Card className="mt-3 divide-y divide-border">
-          {upcoming && upcoming.length > 0 ? upcoming.map((p) => (
-            <div key={p.id} className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ background: (p.clients as any)?.color ?? "#A78BFA" }} />
-                <div>
-                  <div className="font-medium">{p.title}</div>
-                  <div className="text-xs text-muted-foreground">{(p.clients as any)?.name} • {p.network}</div>
+          {upcoming && upcoming.length > 0 ? (
+            upcoming.map((p) => (
+              <div key={p.id} className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ background: (p.clients as any)?.color ?? "#A78BFA" }}
+                  />
+                  <div>
+                    <div className="font-medium">{p.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {(p.clients as any)?.name} • {p.network}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {p.scheduled_at && new Date(p.scheduled_at).toLocaleString("pt-BR")}
                 </div>
               </div>
-              <div className="text-sm text-muted-foreground">
-                {p.scheduled_at && new Date(p.scheduled_at).toLocaleString("pt-BR")}
-              </div>
-            </div>
-          )) : (
+            ))
+          ) : (
             <div className="p-8 text-center text-sm text-muted-foreground">
               Nenhum post agendado. Crie seu primeiro post no Kanban.
             </div>

@@ -62,9 +62,7 @@ function SetupPage() {
                   <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
                 )}
                 <div className="flex-1">
-                  <p className="font-semibold text-sm">
-                    {status.message}
-                  </p>
+                  <p className="font-semibold text-sm">{status.message}</p>
                   {status.instruction && (
                     <p className="text-xs text-muted-foreground mt-2 whitespace-pre-wrap">
                       {status.instruction}
@@ -98,9 +96,7 @@ function SetupPage() {
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-sm mb-2">1️⃣ Fazer Login no Supabase CLI</h3>
-              <pre className="bg-slate-100 p-3 rounded text-xs overflow-x-auto">
-                supabase login
-              </pre>
+              <pre className="bg-slate-100 p-3 rounded text-xs overflow-x-auto">supabase login</pre>
               <p className="text-xs text-muted-foreground mt-2">
                 Isso abrirá seu navegador. Confirme o acesso e volte ao terminal.
               </p>
@@ -128,7 +124,9 @@ function SetupPage() {
                 <strong>💡 O que será criado:</strong>
               </p>
               <ul className="text-xs text-blue-900 mt-2 space-y-1 ml-4">
-                <li>✅ Tabela <code>instagram_report_links</code></li>
+                <li>
+                  ✅ Tabela <code>instagram_report_links</code>
+                </li>
                 <li>✅ 3 índices para performance</li>
                 <li>✅ RLS policies para segurança</li>
                 <li>✅ Auto-expiry em 30 dias</li>

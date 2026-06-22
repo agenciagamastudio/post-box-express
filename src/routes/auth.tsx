@@ -45,7 +45,8 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email, password,
+      email,
+      password,
       options: { data: { full_name: name }, emailRedirectTo: `${window.location.origin}/app` },
     });
     setLoading(false);
@@ -70,7 +71,9 @@ function AuthPage() {
       </div>
       <div className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <div className="md:hidden mb-8"><Logo /></div>
+          <div className="md:hidden mb-8">
+            <Logo />
+          </div>
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
@@ -80,11 +83,23 @@ function AuthPage() {
               <form onSubmit={signIn} className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pwd">Senha</Label>
-                  <Input id="pwd" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Input
+                    id="pwd"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Entrando..." : "Entrar"}
@@ -95,15 +110,33 @@ function AuthPage() {
               <form onSubmit={signUp} className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Seu nome</Label>
-                  <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+                  <Input
+                    id="name"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email2">E-mail</Label>
-                  <Input id="email2" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email2"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pwd2">Senha</Label>
-                  <Input id="pwd2" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Input
+                    id="pwd2"
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Criando..." : "Criar conta grátis"}
@@ -112,7 +145,9 @@ function AuthPage() {
             </TabsContent>
           </Tabs>
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            <Link to="/" className="hover:underline">← Voltar para o site</Link>
+            <Link to="/" className="hover:underline">
+              ← Voltar para o site
+            </Link>
           </p>
         </div>
       </div>

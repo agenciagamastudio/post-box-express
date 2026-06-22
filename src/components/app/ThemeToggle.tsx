@@ -12,11 +12,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       title={theme === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
     >
-      {theme === "dark" ? (
-        <Moon className="h-4 w-4" />
-      ) : (
-        <Sun className="h-4 w-4" />
-      )}
+      {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
     </Button>
   );
 }

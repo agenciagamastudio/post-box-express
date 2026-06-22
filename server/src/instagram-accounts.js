@@ -20,7 +20,7 @@ instagramAccountsRouter.get("/accounts", async (req, res) => {
     let query = admin
       .from("instagram_connections")
       .select(
-        "id,client_id,ig_user_id,ig_username,page_id,status,is_monitored,insights_period,insights_updated_at,last_comments_sync,last_dms_sync,token_expires_at,created_at,updated_at"
+        "id,client_id,ig_user_id,ig_username,page_id,status,is_monitored,insights_period,insights_updated_at,last_comments_sync,last_dms_sync,token_expires_at,created_at,updated_at",
       );
     if (client_id) query = query.eq("client_id", client_id);
     const { data, error } = await query;
@@ -42,7 +42,8 @@ instagramAccountsRouter.post("/accounts/connect", async (req, res) => {
   if (!process.env.IG_APP_ID) {
     return res.status(503).json({
       ok: false,
-      message: "Conexão com Instagram ainda não disponível: IG_APP_ID/SECRET pendente de configuração.",
+      message:
+        "Conexão com Instagram ainda não disponível: IG_APP_ID/SECRET pendente de configuração.",
     });
   }
   res.json({ ok: true, authUrl: buildAuthUrl(client_id) });
@@ -59,7 +60,9 @@ instagramAccountsRouter.post("/accounts/callback", async (req, res) => {
   if (!code || !client_id) {
     return res.status(400).json({ ok: false, message: "Faltou code/client_id." });
   }
-  res.status(501).json({ ok: false, message: "Callback OAuth completo será implementado na Fase 2." });
+  res
+    .status(501)
+    .json({ ok: false, message: "Callback OAuth completo será implementado na Fase 2." });
 });
 
 /**

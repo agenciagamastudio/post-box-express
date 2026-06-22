@@ -42,7 +42,11 @@ function Badge({ status }: { status: string }) {
 
 function fmtDate(iso: string | null) {
   if (!iso) return "Sem data";
-  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function Portal() {
@@ -107,25 +111,40 @@ function Portal() {
           <Logo size="sm" />
           <div className="text-right">
             <div className="font-semibold">{data.client?.name}</div>
-            {data.client?.handle && <div className="text-xs text-muted-foreground">{data.client.handle}</div>}
+            {data.client?.handle && (
+              <div className="text-xs text-muted-foreground">{data.client.handle}</div>
+            )}
           </div>
         </div>
 
         <h1 className="mb-1 font-display text-2xl font-semibold">Portal de conteúdos</h1>
-        <p className="mb-6 text-sm text-muted-foreground">Aprove, acompanhe o calendário e o status dos seus posts.</p>
+        <p className="mb-6 text-sm text-muted-foreground">
+          Aprove, acompanhe o calendário e o status dos seus posts.
+        </p>
 
         <Tabs defaultValue={pending.length ? "aprovar" : "status"}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="aprovar">
-              <Inbox className="mr-1 h-4 w-4" />Aprovar{pending.length ? ` (${pending.length})` : ""}
+              <Inbox className="mr-1 h-4 w-4" />
+              Aprovar{pending.length ? ` (${pending.length})` : ""}
             </TabsTrigger>
-            <TabsTrigger value="status"><ListChecks className="mr-1 h-4 w-4" />Status</TabsTrigger>
-            <TabsTrigger value="cal"><CalendarDays className="mr-1 h-4 w-4" />Calendário</TabsTrigger>
+            <TabsTrigger value="status">
+              <ListChecks className="mr-1 h-4 w-4" />
+              Status
+            </TabsTrigger>
+            <TabsTrigger value="cal">
+              <CalendarDays className="mr-1 h-4 w-4" />
+              Calendário
+            </TabsTrigger>
           </TabsList>
 
           {/* APROVAR */}
           <TabsContent value="aprovar" className="mt-4 space-y-3">
-            <Input placeholder="Seu nome (opcional)" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              placeholder="Seu nome (opcional)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
             {pending.length === 0 && (
               <div className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
                 <CheckCircle2 className="mx-auto mb-2 h-6 w-6 text-success" />
@@ -143,14 +162,19 @@ function Portal() {
             {posts.map((p) => (
               <Card key={p.id} className="flex items-center gap-3 p-3">
                 {p.cover_url ? (
-                  <img src={p.cover_url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+                  <img
+                    src={p.cover_url}
+                    alt=""
+                    className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                  />
                 ) : (
                   <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">{p.title}</div>
                   <div className="text-xs text-muted-foreground">
-                    {p.network} · {p.format}{p.scheduled_at ? ` · ${fmtDate(p.scheduled_at)}` : ""}
+                    {p.network} · {p.format}
+                    {p.scheduled_at ? ` · ${fmtDate(p.scheduled_at)}` : ""}
                   </div>
                 </div>
                 <Badge status={p.status} />
@@ -168,13 +192,19 @@ function Portal() {
                   {list.map((p) => (
                     <Card key={p.id} className="flex items-center gap-3 p-3">
                       {p.cover_url ? (
-                        <img src={p.cover_url} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                        <img
+                          src={p.cover_url}
+                          alt=""
+                          className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                        />
                       ) : (
                         <div className="h-10 w-10 shrink-0 rounded-lg bg-muted" />
                       )}
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">{p.title}</div>
-                        <div className="text-xs text-muted-foreground">{p.network} · {p.format}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {p.network} · {p.format}
+                        </div>
                       </div>
                       <Badge status={p.status} />
                     </Card>
@@ -235,8 +265,12 @@ function ApprovalItem({
         )}
         <div className="min-w-0 flex-1">
           <div className="font-medium">{post.title}</div>
-          <div className="text-xs text-muted-foreground">{post.network} · {post.format}</div>
-          {post.caption && <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{post.caption}</p>}
+          <div className="text-xs text-muted-foreground">
+            {post.network} · {post.format}
+          </div>
+          {post.caption && (
+            <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{post.caption}</p>
+          )}
         </div>
       </div>
       <Textarea
@@ -247,9 +281,19 @@ function ApprovalItem({
       />
       <div className="flex gap-2">
         <Button className="flex-1" onClick={() => decide("approved")} disabled={busy}>
-          {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-1 h-4 w-4" />}Aprovar
+          {busy ? (
+            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+          ) : (
+            <CheckCircle2 className="mr-1 h-4 w-4" />
+          )}
+          Aprovar
         </Button>
-        <Button variant="outline" className="flex-1" onClick={() => decide("changes")} disabled={busy}>
+        <Button
+          variant="outline"
+          className="flex-1"
+          onClick={() => decide("changes")}
+          disabled={busy}
+        >
           Pedir ajuste
         </Button>
       </div>

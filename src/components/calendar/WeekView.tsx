@@ -38,13 +38,7 @@ type WeekViewProps = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-function DraggablePost({
-  post,
-  onPostClick,
-}: {
-  post: Post;
-  onPostClick: (post: Post) => void;
-}) {
+function DraggablePost({ post, onPostClick }: { post: Post; onPostClick: (post: Post) => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: post.id,
   });
@@ -123,10 +117,7 @@ export function WeekView({
   filters,
 }: WeekViewProps) {
   const qc = useQueryClient();
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
-  );
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   const weekStart = useMemo(() => {
     const d = new Date(cursor);
@@ -191,7 +182,9 @@ export function WeekView({
           variant="outline"
           size="icon"
           onClick={() =>
-            setCursor(new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() - 7))
+            setCursor(
+              new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() - 7),
+            )
           }
         >
           <ChevronLeft className="h-4 w-4" />
@@ -201,7 +194,9 @@ export function WeekView({
           variant="outline"
           size="icon"
           onClick={() =>
-            setCursor(new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 7))
+            setCursor(
+              new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 7),
+            )
           }
         >
           <ChevronRight className="h-4 w-4" />

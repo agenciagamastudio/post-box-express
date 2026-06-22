@@ -10,10 +10,15 @@ function Team() {
   const { data: members } = useQuery({
     queryKey: ["team"],
     queryFn: async () => {
-      const { data: profiles, error } = await supabase.from("profiles").select("id,full_name,avatar_url");
+      const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("id,full_name,avatar_url");
       if (error) throw error;
       const { data: roles } = await supabase.from("user_roles").select("user_id,role");
-      return profiles.map((p) => ({ ...p, roles: roles?.filter((r) => r.user_id === p.id).map((r) => r.role) ?? [] }));
+      return profiles.map((p) => ({
+        ...p,
+        roles: roles?.filter((r) => r.user_id === p.id).map((r) => r.role) ?? [],
+      }));
     },
   });
 
@@ -33,7 +38,9 @@ function Team() {
           </Card>
         ))}
         {(!members || members.length === 0) && (
-          <div className="col-span-full text-sm text-muted-foreground">Apenas você por enquanto. Convites por e-mail em breve.</div>
+          <div className="col-span-full text-sm text-muted-foreground">
+            Apenas você por enquanto. Convites por e-mail em breve.
+          </div>
         )}
       </div>
     </div>

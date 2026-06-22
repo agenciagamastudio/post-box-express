@@ -54,12 +54,12 @@ function MonitoringPage() {
   const { data: insights, isLoading: insightsLoading } = useInstagramInsights(
     selectedAccountId,
     period,
-    !!selectedAccountId
+    !!selectedAccountId,
   );
   const { data: comments, isLoading: commentsLoading } = useInstagramComments(
     selectedAccountId,
     25,
-    !!selectedAccountId
+    !!selectedAccountId,
   );
   const { data: dms } = useInstagramDMs(selectedAccountId, !!selectedAccountId);
 
@@ -77,9 +77,7 @@ function MonitoringPage() {
         {/* Controles */}
         <Card className="mb-6 p-4 flex gap-4 flex-wrap items-end">
           <div className="flex-1 min-w-[200px]">
-            <label className="text-sm font-medium mb-2 block">
-              Conta Instagram
-            </label>
+            <label className="text-sm font-medium mb-2 block">Conta Instagram</label>
             <Select value={selectedAccountId || ""} onValueChange={setSelectedAccountId}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma conta" />

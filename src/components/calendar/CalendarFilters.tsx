@@ -56,12 +56,7 @@ export function CalendarFiltersPanel({
           <h3 className="text-sm font-semibold">Filtros</h3>
         </div>
         {hasFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="h-6 text-xs"
-          >
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 text-xs">
             Limpar tudo
           </Button>
         )}
@@ -173,11 +168,7 @@ export function CalendarFiltersPanel({
             <div className="flex flex-wrap gap-1.5">
               {/* Redes ativas */}
               {activeNetworks.map((net) => (
-                <Badge
-                  key={net.value}
-                  variant="secondary"
-                  className="gap-1 pl-2 text-xs"
-                >
+                <Badge key={net.value} variant="secondary" className="gap-1 pl-2 text-xs">
                   {net.label}
                   <button
                     onClick={() => toggleNetwork(net.value)}

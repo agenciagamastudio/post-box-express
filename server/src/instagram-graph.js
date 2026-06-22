@@ -58,7 +58,12 @@ export async function fetchInsights(igUserId, token, period = "7days") {
     return {
       mock: true,
       insights: [
-        { date: new Date().toISOString().split("T")[0], impressions: 1234, reach: 890, profile_views: 45 },
+        {
+          date: new Date().toISOString().split("T")[0],
+          impressions: 1234,
+          reach: 890,
+          profile_views: 45,
+        },
       ],
     };
   }

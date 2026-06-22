@@ -90,7 +90,11 @@ export async function runTokenRefresh() {
       const t = await refreshConnectionToken(conn);
       await admin
         .from("instagram_connections")
-        .update({ access_token: t.access_token, token_expires_at: t.token_expires_at, updated_at: new Date().toISOString() })
+        .update({
+          access_token: t.access_token,
+          token_expires_at: t.token_expires_at,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", conn.id);
       refreshed++;
     } catch (err) {

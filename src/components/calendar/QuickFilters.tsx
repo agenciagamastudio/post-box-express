@@ -58,9 +58,7 @@ export function QuickFilters({
         >
           {client.name}
           <button
-            onClick={() =>
-              filters.onlyThisClient ? setOnlyClient(null) : toggleClient(client.id)
-            }
+            onClick={() => (filters.onlyThisClient ? setOnlyClient(null) : toggleClient(client.id))}
             className="hover:opacity-60 transition"
           >
             <X className="h-3 w-3" />
@@ -71,11 +69,7 @@ export function QuickFilters({
       {/* Menu dropdown de filtros rápidos */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-          >
+          <Button variant="outline" size="sm" className="gap-1">
             Clientes
             <ChevronDown className="h-4 w-4" />
             {activeClients.length > 0 && (
@@ -140,10 +134,7 @@ export function QuickFilters({
           {hasFilters && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={false}
-                onCheckedChange={() => clearFilters()}
-              >
+              <DropdownMenuCheckboxItem checked={false} onCheckedChange={() => clearFilters()}>
                 <span className="text-sm text-destructive">Limpar tudo</span>
               </DropdownMenuCheckboxItem>
             </>

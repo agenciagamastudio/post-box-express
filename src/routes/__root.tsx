@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ViewPreferencesProvider } from "@/contexts/ViewPreferencesContext";
 
 function NotFoundComponent() {
   return (
@@ -51,7 +52,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
             Tentar de novo
@@ -74,10 +78,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "GamaGit — Gestão de social media simplificada" },
-      { name: "description", content: "Organize aprovação de conteúdo, agendamento, clientes, equipe e financeiro do seu social media em um único lugar." },
+      {
+        name: "description",
+        content:
+          "Organize aprovação de conteúdo, agendamento, clientes, equipe e financeiro do seu social media em um único lugar.",
+      },
       { name: "author", content: "GamaGit" },
       { property: "og:title", content: "GamaGit — Gestão de social media simplificada" },
-      { property: "og:description", content: "Aprove, agende e organize posts com sua equipe e clientes." },
+      {
+        property: "og:description",
+        content: "Aprove, agende e organize posts com sua equipe e clientes.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -130,10 +141,12 @@ function RootComponent() {
 
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <Outlet />
-        <Toaster richColors position="top-right" />
-      </QueryClientProvider>
+      <ViewPreferencesProvider>
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+          <Toaster richColors position="top-right" />
+        </QueryClientProvider>
+      </ViewPreferencesProvider>
     </ThemeProvider>
   );
 }

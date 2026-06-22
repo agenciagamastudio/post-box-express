@@ -51,14 +51,14 @@ const API_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8787";
 export function useInstagramInsights(
   accountId: string | null,
   period: "7days" | "30days" = "7days",
-  enabled = true
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ["instagram-insights", accountId, period],
     queryFn: async () => {
       if (!accountId) throw new Error("accountId é obrigatório");
       const response = await fetch(
-        `${API_URL}/api/instagram/monitoring/insights/${accountId}?period=${period}`
+        `${API_URL}/api/instagram/monitoring/insights/${accountId}?period=${period}`,
       );
       if (!response.ok) throw new Error("Falha ao buscar insights");
       return (await response.json()) as { success: boolean; insights: Insight[] };
@@ -74,17 +74,13 @@ export function useInstagramInsights(
  * @param limit - Limite de comentários
  * @param enabled - Se deve fazer fetch
  */
-export function useInstagramComments(
-  accountId: string | null,
-  limit = 25,
-  enabled = true
-) {
+export function useInstagramComments(accountId: string | null, limit = 25, enabled = true) {
   return useQuery({
     queryKey: ["instagram-comments", accountId],
     queryFn: async () => {
       if (!accountId) throw new Error("accountId é obrigatório");
       const response = await fetch(
-        `${API_URL}/api/instagram/monitoring/comments/${accountId}?limit=${limit}`
+        `${API_URL}/api/instagram/monitoring/comments/${accountId}?limit=${limit}`,
       );
       if (!response.ok) throw new Error("Falha ao buscar comentários");
       return (await response.json()) as {
@@ -108,9 +104,7 @@ export function useInstagramDMs(accountId: string | null, enabled = true) {
     queryKey: ["instagram-dms", accountId],
     queryFn: async () => {
       if (!accountId) throw new Error("accountId é obrigatório");
-      const response = await fetch(
-        `${API_URL}/api/instagram/monitoring/dms/${accountId}`
-      );
+      const response = await fetch(`${API_URL}/api/instagram/monitoring/dms/${accountId}`);
       if (!response.ok) throw new Error("Falha ao buscar DMs");
       return (await response.json()) as { success: boolean; conversations_count: number };
     },
@@ -139,7 +133,7 @@ export function useReplyToComment() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accountId, message }),
-        }
+        },
       );
       if (!response.ok) throw new Error("Falha ao responder comentário");
       return (await response.json()) as { success: boolean; reply_id: string };
@@ -167,7 +161,7 @@ export function useSendDM() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accountId, message }),
-        }
+        },
       );
       if (!response.ok) throw new Error("Falha ao enviar mensagem");
       return (await response.json()) as { success: boolean; message_id: string };

@@ -124,7 +124,7 @@ app.get("/auth/instagram/start", async (req, res) => {
           status: "connected",
           updated_at: new Date().toISOString(),
         },
-        { onConflict: "client_id" }
+        { onConflict: "client_id" },
       );
       const suffix = error ? `error&msg=${encodeURIComponent(error.message)}` : "connected&mock=1";
       return res.redirect(`${APP_URL}/integracoes/${clientId}?ig=${suffix}`);
@@ -132,7 +132,7 @@ app.get("/auth/instagram/start", async (req, res) => {
     return res
       .status(503)
       .send(
-        "Conexão com Instagram ainda não disponível: o app do Instagram (IG_APP_ID/SECRET) precisa ser criado e configurado (Epic D)."
+        "Conexão com Instagram ainda não disponível: o app do Instagram (IG_APP_ID/SECRET) precisa ser criado e configurado (Epic D).",
       );
   }
   res.redirect(buildAuthUrl(clientId));
@@ -155,7 +155,7 @@ app.get("/auth/instagram/callback", async (req, res) => {
         status: "connected",
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "client_id" }
+      { onConflict: "client_id" },
     );
     if (error) throw new Error(error.message);
     res.redirect(`${APP_URL}/clientes?ig=connected`);
@@ -181,7 +181,11 @@ app.get("/api/review/:token", async (req, res) => {
     .maybeSingle();
   let clientName = null;
   if (post) {
-    const { data: c } = await admin.from("clients").select("name").eq("id", post.client_id).maybeSingle();
+    const { data: c } = await admin
+      .from("clients")
+      .select("name")
+      .eq("id", post.client_id)
+      .maybeSingle();
     clientName = c?.name ?? null;
   }
   res.json({
@@ -227,7 +231,11 @@ app.get("/api/portal/:token", async (req, res) => {
     .eq("token", req.params.token)
     .maybeSingle();
   if (!link) return res.status(404).json({ error: "Link inválido ou expirado." });
-  const { data: client } = await admin.from("clients").select("name,handle").eq("id", link.client_id).maybeSingle();
+  const { data: client } = await admin
+    .from("clients")
+    .select("name,handle")
+    .eq("id", link.client_id)
+    .maybeSingle();
   const { data: posts } = await admin
     .from("posts")
     .select("id,title,status,network,format,scheduled_at,published_at,cover_url")
@@ -248,7 +256,11 @@ app.post("/api/portal/:token/decision", async (req, res) => {
     .eq("token", req.params.token)
     .maybeSingle();
   if (!link) return res.status(404).json({ error: "Link inválido." });
-  const { data: post } = await admin.from("posts").select("id,client_id").eq("id", post_id).maybeSingle();
+  const { data: post } = await admin
+    .from("posts")
+    .select("id,client_id")
+    .eq("id", post_id)
+    .maybeSingle();
   if (!post || post.client_id !== link.client_id) {
     return res.status(403).json({ error: "Post não pertence a este portal." });
   }
@@ -282,5 +294,7 @@ cron.schedule("0 3 * * *", async () => {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`GamaGit server on http://localhost:${PORT} | mock=${process.env.PUBLISH_MOCK} | cron="${CRON}"`);
+  console.log(
+    `GamaGit server on http://localhost:${PORT} | mock=${process.env.PUBLISH_MOCK} | cron="${CRON}"`,
+  );
 });

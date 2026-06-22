@@ -85,12 +85,7 @@ export default function ShareInsightsButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={disabled || loading}
-          className="gap-2"
-        >
+        <Button variant="outline" size="sm" disabled={disabled || loading} className="gap-2">
           <Share2 className="w-4 h-4" />
           Compartilhar
         </Button>
@@ -102,20 +97,13 @@ export default function ShareInsightsButton({
             <div className="space-y-3">
               <p className="text-sm font-medium">Gerar link compartilhável</p>
               <p className="text-xs text-muted-foreground">
-                Crie um link seguro para compartilhar este relatório com seu cliente. O link expira em 30 dias.
+                Crie um link seguro para compartilhar este relatório com seu cliente. O link expira
+                em 30 dias.
               </p>
 
-              {error && (
-                <div className="text-xs text-red-600 bg-red-50 p-2 rounded">
-                  {error}
-                </div>
-              )}
+              {error && <div className="text-xs text-red-600 bg-red-50 p-2 rounded">{error}</div>}
 
-              <Button
-                onClick={generateLink}
-                disabled={loading}
-                className="w-full gap-2"
-              >
+              <Button onClick={generateLink} disabled={loading} className="w-full gap-2">
                 {loading ? "Gerando..." : "Gerar Link"}
               </Button>
             </div>

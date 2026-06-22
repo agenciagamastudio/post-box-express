@@ -46,21 +46,9 @@ export function GlobalSearchDialog() {
       const searchTerm = `%${query}%`;
 
       const [clientsRes, postsRes, tasksRes] = await Promise.all([
-        supabase
-          .from("clients")
-          .select("id,name")
-          .ilike("name", searchTerm)
-          .limit(5),
-        supabase
-          .from("posts")
-          .select("id,title")
-          .ilike("title", searchTerm)
-          .limit(5),
-        supabase
-          .from("tasks")
-          .select("id,title")
-          .ilike("title", searchTerm)
-          .limit(5),
+        supabase.from("clients").select("id,name").ilike("name", searchTerm).limit(5),
+        supabase.from("posts").select("id,title").ilike("title", searchTerm).limit(5),
+        supabase.from("tasks").select("id,title").ilike("title", searchTerm).limit(5),
       ]);
 
       const clients: SearchResult[] = (clientsRes.data || []).map((c) => ({

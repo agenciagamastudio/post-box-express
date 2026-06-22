@@ -6,7 +6,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus, Building2, Instagram } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -56,7 +63,10 @@ function Clients() {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Não autenticado");
       const { error } = await supabase.from("clients").insert({
-        owner_id: u.user.id, name, handle: handle || null, color,
+        owner_id: u.user.id,
+        name,
+        handle: handle || null,
+        color,
       });
       if (error) throw error;
     },
@@ -64,7 +74,9 @@ function Clients() {
       toast.success("Cliente criado");
       qc.invalidateQueries({ queryKey: ["clients"] });
       qc.invalidateQueries({ queryKey: ["clients-list"] });
-      setOpen(false); setName(""); setHandle("");
+      setOpen(false);
+      setName("");
+      setHandle("");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -76,9 +88,16 @@ function Clients() {
         description="Cadastre as marcas e perfis que você atende e conecte o Instagram de cada um."
         action={
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4" />Novo cliente</Button></DialogTrigger>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo cliente
+              </Button>
+            </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Novo cliente</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Novo cliente</DialogTitle>
+              </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Nome</Label>
@@ -86,16 +105,29 @@ function Clients() {
                 </div>
                 <div className="space-y-2">
                   <Label>@ do Instagram</Label>
-                  <Input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="@marca" />
+                  <Input
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                    placeholder="@marca"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Cor</Label>
-                  <Input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-20 p-1" />
+                  <Input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="h-10 w-20 p-1"
+                  />
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                <Button onClick={() => create.mutate()} disabled={!name || create.isPending}>Salvar</Button>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={() => create.mutate()} disabled={!name || create.isPending}>
+                  Salvar
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -118,14 +150,18 @@ function Clients() {
                   <div className="truncate font-semibold">{c.name}</div>
                   <div className="truncate text-xs text-muted-foreground">{c.handle || "—"}</div>
                 </div>
-                <span className={`rounded-full px-2 py-0.5 text-xs ${c.active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs ${c.active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}
+                >
                   {c.active ? "ativo" : "inativo"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between border-t border-border pt-3">
                 <div className="flex items-center gap-2 text-sm">
-                  <Instagram className={`h-4 w-4 ${connected ? "text-primary" : "text-muted-foreground"}`} />
+                  <Instagram
+                    className={`h-4 w-4 ${connected ? "text-primary" : "text-muted-foreground"}`}
+                  />
                   {connected ? (
                     <span className="text-foreground">{conn?.ig_username || "Conectado"}</span>
                   ) : (
@@ -148,7 +184,6 @@ function Clients() {
           </div>
         )}
       </div>
-
     </div>
   );
 }

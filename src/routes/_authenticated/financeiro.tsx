@@ -6,8 +6,21 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -33,7 +46,10 @@ function Finance() {
   const { data: entries } = useQuery({
     queryKey: ["finance"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("finance_entries").select("*, clients(name,color)").order("due_at", { ascending: true });
+      const { data, error } = await supabase
+        .from("finance_entries")
+        .select("*, clients(name,color)")
+        .order("due_at", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -45,18 +61,32 @@ function Finance() {
       if (!u.user) throw new Error("Não autenticado");
       if (!clientId) throw new Error("Escolha um cliente");
       const { error } = await supabase.from("finance_entries").insert({
-        client_id: clientId, kind: kind as any, description: desc, amount: Number(amount),
-        due_at: due || null, created_by: u.user.id,
+        client_id: clientId,
+        kind: kind as any,
+        description: desc,
+        amount: Number(amount),
+        due_at: due || null,
+        created_by: u.user.id,
       });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Lançamento criado"); qc.invalidateQueries({ queryKey: ["finance"] }); setOpen(false); setDesc(""); setAmount(""); setDue(""); },
+    onSuccess: () => {
+      toast.success("Lançamento criado");
+      qc.invalidateQueries({ queryKey: ["finance"] });
+      setOpen(false);
+      setDesc("");
+      setAmount("");
+      setDue("");
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const togglePaid = useMutation({
     mutationFn: async ({ id, paid }: { id: string; paid: boolean }) => {
-      const { error } = await supabase.from("finance_entries").update({ paid_at: paid ? new Date().toISOString().slice(0, 10) : null }).eq("id", id);
+      const { error } = await supabase
+        .from("finance_entries")
+        .update({ paid_at: paid ? new Date().toISOString().slice(0, 10) : null })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["finance"] }),
@@ -65,8 +95,11 @@ function Finance() {
   const totals = (entries ?? []).reduce(
     (acc, e) => {
       const v = Number(e.amount);
-      if (e.kind === "receber") { e.paid_at ? acc.recebido += v : acc.aReceber += v; }
-      else { e.paid_at ? acc.pago += v : acc.aPagar += v; }
+      if (e.kind === "receber") {
+        e.paid_at ? (acc.recebido += v) : (acc.aReceber += v);
+      } else {
+        e.paid_at ? (acc.pago += v) : (acc.aPagar += v);
+      }
       return acc;
     },
     { aReceber: 0, recebido: 0, aPagar: 0, pago: 0 },
@@ -81,15 +114,24 @@ function Finance() {
         description="Contas a receber e a pagar por cliente."
         action={
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4" />Novo lançamento</Button></DialogTrigger>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo lançamento
+              </Button>
+            </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Novo lançamento</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>Novo lançamento</DialogTitle>
+              </DialogHeader>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>Tipo</Label>
                     <Select value={kind} onValueChange={setKind}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="receber">A receber</SelectItem>
                         <SelectItem value="pagar">A pagar</SelectItem>
@@ -99,18 +141,44 @@ function Finance() {
                   <div className="space-y-2">
                     <Label>Cliente</Label>
                     <Select value={clientId} onValueChange={setClientId}>
-                      <SelectTrigger><SelectValue placeholder="..." /></SelectTrigger>
-                      <SelectContent>{clients?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                      <SelectTrigger>
+                        <SelectValue placeholder="..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clients?.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2"><Label>Descrição</Label><Input value={desc} onChange={(e) => setDesc(e.target.value)} /></div>
+                <div className="space-y-2">
+                  <Label>Descrição</Label>
+                  <Input value={desc} onChange={(e) => setDesc(e.target.value)} />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2"><Label>Valor</Label><Input type="number" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
-                  <div className="space-y-2"><Label>Vencimento</Label><Input type="date" value={due} onChange={(e) => setDue(e.target.value)} /></div>
+                  <div className="space-y-2">
+                    <Label>Valor</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Vencimento</Label>
+                    <Input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
+                  </div>
                 </div>
               </div>
-              <DialogFooter><Button onClick={() => create.mutate()} disabled={!desc || !amount}>Salvar</Button></DialogFooter>
+              <DialogFooter>
+                <Button onClick={() => create.mutate()} disabled={!desc || !amount}>
+                  Salvar
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         }
@@ -127,21 +195,39 @@ function Finance() {
         {entries?.map((e) => (
           <div key={e.id} className="flex items-center justify-between gap-4 p-4">
             <div className="flex items-center gap-3">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: (e.clients as any)?.color ?? "#A78BFA" }} />
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: (e.clients as any)?.color ?? "#A78BFA" }}
+              />
               <div>
                 <div className="font-medium">{e.description}</div>
-                <div className="text-xs text-muted-foreground">{(e.clients as any)?.name} · {e.kind === "receber" ? "A receber" : "A pagar"} · vence {e.due_at ?? "—"}</div>
+                <div className="text-xs text-muted-foreground">
+                  {(e.clients as any)?.name} · {e.kind === "receber" ? "A receber" : "A pagar"} ·
+                  vence {e.due_at ?? "—"}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`font-semibold ${e.kind === "receber" ? "text-success" : "text-warning"}`}>{fmt(Number(e.amount))}</span>
-              <Button size="sm" variant={e.paid_at ? "secondary" : "outline"} onClick={() => togglePaid.mutate({ id: e.id, paid: !e.paid_at })}>
+              <span
+                className={`font-semibold ${e.kind === "receber" ? "text-success" : "text-warning"}`}
+              >
+                {fmt(Number(e.amount))}
+              </span>
+              <Button
+                size="sm"
+                variant={e.paid_at ? "secondary" : "outline"}
+                onClick={() => togglePaid.mutate({ id: e.id, paid: !e.paid_at })}
+              >
                 {e.paid_at ? "Pago" : "Marcar pago"}
               </Button>
             </div>
           </div>
         ))}
-        {(!entries || entries.length === 0) && <div className="p-8 text-center text-sm text-muted-foreground">Sem lançamentos ainda.</div>}
+        {(!entries || entries.length === 0) && (
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            Sem lançamentos ainda.
+          </div>
+        )}
       </Card>
     </div>
   );

@@ -14,6 +14,7 @@ Implementar endpoints REST que sincronizam insights, comentários e DMs do Insta
 ## 📋 O Que Foi Entregue
 
 ### 1. Módulo Graph API (`server/src/instagram-graph.js`)
+
 - `fetchInsights()` — Busca métricas (impressões, reach, profile views)
 - `fetchComments()` — Busca comentários em posts
 - `fetchConversations()` — Busca DMs (conversas)
@@ -26,12 +27,15 @@ Implementar endpoints REST que sincronizam insights, comentários e DMs do Insta
 ### 2. Endpoints REST (`server/src/instagram-monitoring.js`)
 
 #### GET `/api/instagram/monitoring/insights/:accountId`
+
 Busca insights de uma conta.
 
 **Query params:**
+
 - `period=7days|30days` (default: 7days)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -51,12 +55,15 @@ Busca insights de uma conta.
 ---
 
 #### GET `/api/instagram/monitoring/comments/:accountId`
+
 Busca comentários e sincroniza com `instagram_comments`.
 
 **Query params:**
+
 - `limit=25` (default)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -82,9 +89,11 @@ Busca comentários e sincroniza com `instagram_comments`.
 ---
 
 #### GET `/api/instagram/monitoring/dms/:accountId`
+
 Busca conversas e sincroniza com `instagram_dms`.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -92,7 +101,8 @@ Busca conversas e sincroniza com `instagram_dms`.
 }
 ```
 
-**Syncro:** 
+**Syncro:**
+
 1. Busca todas conversas
 2. Para cada conversa, busca mensagens
 3. Upsert em `instagram_dms`
@@ -100,9 +110,11 @@ Busca conversas e sincroniza com `instagram_dms`.
 ---
 
 #### POST `/api/instagram/monitoring/comments/:commentId/reply`
+
 Responde a um comentário.
 
 **Body:**
+
 ```json
 {
   "accountId": "uuid-da-conexao",
@@ -111,6 +123,7 @@ Responde a um comentário.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -121,9 +134,11 @@ Responde a um comentário.
 ---
 
 #### POST `/api/instagram/monitoring/dms/:conversationId/send`
+
 Envia mensagem em uma conversa.
 
 **Body:**
+
 ```json
 {
   "accountId": "uuid-da-conexao",
@@ -132,6 +147,7 @@ Envia mensagem em uma conversa.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -144,40 +160,45 @@ Envia mensagem em uma conversa.
 ## 🎣 Hook React (`src/hooks/useInstagramMonitoring.ts`)
 
 ### `useInstagramInsights(accountId, period, enabled)`
+
 ```typescript
 const { data, isLoading, error } = useInstagramInsights(accountId, "7days");
 console.log(data?.insights); // Array de insights
 ```
 
 ### `useInstagramComments(accountId, limit, enabled)`
+
 ```typescript
 const { data, isLoading } = useInstagramComments(accountId, 25);
 console.log(data?.comments); // Array de comentários
 ```
 
 ### `useInstagramDMs(accountId, enabled)`
+
 ```typescript
 const { data } = useInstagramDMs(accountId);
 console.log(data?.conversations_count); // Número de conversas
 ```
 
 ### `useReplyToComment()`
+
 ```typescript
 const { mutate } = useReplyToComment();
 mutate({
   commentId: "123",
   accountId: "uuid",
-  message: "Obrigado! 😊"
+  message: "Obrigado! 😊",
 });
 ```
 
 ### `useSendDM()`
+
 ```typescript
 const { mutate } = useSendDM();
 mutate({
   conversationId: "conv_123",
   accountId: "uuid",
-  message: "Oi!"
+  message: "Oi!",
 });
 ```
 
@@ -186,6 +207,7 @@ mutate({
 ## 🧪 Testing
 
 ### Com Mock (Agora)
+
 ```bash
 export PUBLISH_MOCK=true
 npm run dev
@@ -193,6 +215,7 @@ npm run dev
 ```
 
 ### Com Credenciais Reais (Depois)
+
 ```bash
 export IG_APP_ID="seu_app_id"
 export IG_APP_SECRET="seu_app_secret"
@@ -228,6 +251,7 @@ export function MonitoringDashboard() {
 ## 🔄 Sincronização Automática (Fase 4)
 
 Próximas melhorias:
+
 - **Cron job** para sincronizar insights a cada 30min
 - **WebSocket** para notificações em tempo real de comentários/DMs
 - **Bot de resposta automática** (sugestões de reply)
@@ -236,12 +260,12 @@ Próximas melhorias:
 
 ## ⚠️ Dependências
 
-| Dependency | Para quê | Status |
-|------------|----------|--------|
-| `@tanstack/react-query` | Caching + refetch | ✅ Já instalado |
-| `express` (backend) | Endpoints REST | ✅ Já instalado |
-| `supabase` | Storage de dados | ✅ Já instalado |
-| IG_APP_ID / IG_APP_SECRET | OAuth Graph API | ⏳ Configurar no Meta |
+| Dependency                | Para quê          | Status                |
+| ------------------------- | ----------------- | --------------------- |
+| `@tanstack/react-query`   | Caching + refetch | ✅ Já instalado       |
+| `express` (backend)       | Endpoints REST    | ✅ Já instalado       |
+| `supabase`                | Storage de dados  | ✅ Já instalado       |
+| IG_APP_ID / IG_APP_SECRET | OAuth Graph API   | ⏳ Configurar no Meta |
 
 ---
 
@@ -256,13 +280,13 @@ Próximas melhorias:
 
 ## 📊 Endpoints Summary
 
-| Method | Path | Função |
-|--------|------|--------|
-| GET | `/api/instagram/monitoring/insights/:accountId` | Busca insights |
-| GET | `/api/instagram/monitoring/comments/:accountId` | Busca comentários |
-| GET | `/api/instagram/monitoring/dms/:accountId` | Busca DMs |
-| POST | `/api/instagram/monitoring/comments/:commentId/reply` | Responder comentário |
-| POST | `/api/instagram/monitoring/dms/:conversationId/send` | Enviar DM |
+| Method | Path                                                  | Função               |
+| ------ | ----------------------------------------------------- | -------------------- |
+| GET    | `/api/instagram/monitoring/insights/:accountId`       | Busca insights       |
+| GET    | `/api/instagram/monitoring/comments/:accountId`       | Busca comentários    |
+| GET    | `/api/instagram/monitoring/dms/:accountId`            | Busca DMs            |
+| POST   | `/api/instagram/monitoring/comments/:commentId/reply` | Responder comentário |
+| POST   | `/api/instagram/monitoring/dms/:conversationId/send`  | Enviar DM            |
 
 ---
 

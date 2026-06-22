@@ -1,5 +1,14 @@
 import { Card } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { TrendingUp, Eye, Users } from "lucide-react";
 
 interface InsightValue {
@@ -33,10 +42,11 @@ export default function InsightsSection({ insights, loading }: Props) {
   }
 
   // Transforma dados do Instagram Graph API para formato gráfico
-  const transformedData = insights[0]?.values?.map((v) => ({
-    date: new Date(v.end_time).toLocaleDateString("pt-BR"),
-    reach: v.value,
-  })) || [];
+  const transformedData =
+    insights[0]?.values?.map((v) => ({
+      date: new Date(v.end_time).toLocaleDateString("pt-BR"),
+      reach: v.value,
+    })) || [];
 
   const reachMetric = insights.find((m) => m.name === "reach");
   const totals = {
@@ -74,7 +84,9 @@ export default function InsightsSection({ insights, loading }: Props) {
             <div>
               <p className="text-sm text-muted-foreground mb-1">Média por Dia</p>
               <p className="text-2xl font-bold">
-                {transformedData.length > 0 ? Math.round(totals.reach / transformedData.length).toLocaleString() : 0}
+                {transformedData.length > 0
+                  ? Math.round(totals.reach / transformedData.length).toLocaleString()
+                  : 0}
               </p>
             </div>
             <Eye className="w-8 h-8 text-purple-500" />

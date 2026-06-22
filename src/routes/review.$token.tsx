@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/app/Logo";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
-
 export const Route = createFileRoute("/review/$token")({
   component: Review,
 });
@@ -92,26 +91,35 @@ function Review() {
 
   const post = data.post;
   const alreadyDecided = data.review.status !== "pending";
-  const finished = done || (alreadyDecided ? (data.review.status === "approved" ? "approved" : "changes") : null);
+  const finished =
+    done || (alreadyDecided ? (data.review.status === "approved" ? "approved" : "changes") : null);
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-lg">
         <div className="mb-6 flex items-center justify-between">
           <Logo size="sm" />
-          {post.client_name && <span className="text-sm text-muted-foreground">{post.client_name}</span>}
+          {post.client_name && (
+            <span className="text-sm text-muted-foreground">{post.client_name}</span>
+          )}
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
           {post.cover_url && (
-            <img src={post.cover_url} alt={post.title} className="aspect-square w-full object-cover" />
+            <img
+              src={post.cover_url}
+              alt={post.title}
+              className="aspect-square w-full object-cover"
+            />
           )}
           <div className="space-y-3 p-5">
             <div className="text-xs uppercase tracking-wide text-muted-foreground">
               {post.network} · {post.format}
             </div>
             <h1 className="font-display text-xl font-semibold">{post.title}</h1>
-            {post.caption && <p className="whitespace-pre-wrap text-sm text-muted-foreground">{post.caption}</p>}
+            {post.caption && (
+              <p className="whitespace-pre-wrap text-sm text-muted-foreground">{post.caption}</p>
+            )}
           </div>
         </div>
 
@@ -121,13 +129,17 @@ function Review() {
               <>
                 <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
                 <p className="mt-3 font-semibold">Post aprovado! 🎉</p>
-                <p className="text-sm text-muted-foreground">Obrigado — sua aprovação foi registrada.</p>
+                <p className="text-sm text-muted-foreground">
+                  Obrigado — sua aprovação foi registrada.
+                </p>
               </>
             ) : (
               <>
                 <AlertCircle className="mx-auto h-10 w-10 text-warning" />
                 <p className="mt-3 font-semibold">Ajuste solicitado</p>
-                <p className="text-sm text-muted-foreground">Recebemos seu feedback. A equipe vai revisar.</p>
+                <p className="text-sm text-muted-foreground">
+                  Recebemos seu feedback. A equipe vai revisar.
+                </p>
                 {data.review.comment && (
                   <p className="mt-2 rounded-lg bg-muted/40 p-2 text-sm">"{data.review.comment}"</p>
                 )}
@@ -136,7 +148,11 @@ function Review() {
           </div>
         ) : (
           <div className="mt-6 space-y-3">
-            <Input placeholder="Seu nome (opcional)" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              placeholder="Seu nome (opcional)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
             <Textarea
               placeholder="Comentário / o que ajustar (obrigatório se pedir ajuste)"
               rows={3}
@@ -145,10 +161,19 @@ function Review() {
             />
             <div className="flex gap-3">
               <Button className="flex-1" onClick={() => decide("approved")} disabled={sending}>
-                {sending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-1 h-4 w-4" />}
+                {sending ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="mr-1 h-4 w-4" />
+                )}
                 Aprovar
               </Button>
-              <Button variant="outline" className="flex-1" onClick={() => decide("changes")} disabled={sending}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => decide("changes")}
+                disabled={sending}
+              >
                 Pedir ajuste
               </Button>
             </div>

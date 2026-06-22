@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 type Props = {
@@ -31,8 +43,14 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
   useEffect(() => {
     if (!open) return;
     if (!postId) {
-      setTitle(""); setCaption(""); setClientId(""); setNetwork("instagram");
-      setFormat("feed"); setStatus("rascunho"); setScheduledAt(""); setCoverUrl("");
+      setTitle("");
+      setCaption("");
+      setClientId("");
+      setNetwork("instagram");
+      setFormat("feed");
+      setStatus("rascunho");
+      setScheduledAt("");
+      setCoverUrl("");
       return;
     }
     (async () => {
@@ -53,7 +71,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
       if (data.scheduled_at) {
         const d = new Date(data.scheduled_at);
         const p = (n: number) => String(n).padStart(2, "0");
-        setScheduledAt(`${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`);
+        setScheduledAt(
+          `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`,
+        );
       } else {
         setScheduledAt("");
       }
@@ -86,7 +106,11 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
   const { data: clients } = useQuery({
     queryKey: ["clients-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("clients").select("id,name").eq("active", true).order("name");
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id,name")
+        .eq("active", true)
+        .order("name");
       if (error) throw error;
       return data;
     },
@@ -99,8 +123,12 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
       if (!u.user) throw new Error("Não autenticado");
       if (!clientId) throw new Error("Escolha um cliente");
       const payload = {
-        title, caption, client_id: clientId,
-        network: network as any, format: format as any, status: status as any,
+        title,
+        caption,
+        client_id: clientId,
+        network: network as any,
+        format: format as any,
+        status: status as any,
         scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
         cover_url: coverUrl || null,
         created_by: u.user.id,
@@ -119,7 +147,10 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
       qc.invalidateQueries({ queryKey: ["dashboard-counts"] });
       qc.invalidateQueries({ queryKey: ["upcoming-posts"] });
       onOpenChange(false);
-      setTitle(""); setCaption(""); setScheduledAt(""); setCoverUrl("");
+      setTitle("");
+      setCaption("");
+      setScheduledAt("");
+      setCoverUrl("");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -127,20 +158,32 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>{postId ? "Editar post" : "Novo post"}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{postId ? "Editar post" : "Novo post"}</DialogTitle>
+        </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Cliente</Label>
             <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger><SelectValue placeholder="Selecione um cliente" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione um cliente" />
+              </SelectTrigger>
               <SelectContent>
-                {clients?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {clients?.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label>Título</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Lançamento da coleção" />
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Lançamento da coleção"
+            />
           </div>
           <div className="space-y-2">
             <Label>Legenda</Label>
@@ -150,7 +193,11 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
             <Label>Imagem (capa) — obrigatória para publicar no Instagram</Label>
             <div className="flex items-center gap-3">
               {coverUrl && (
-                <img src={coverUrl} alt="capa" className="h-16 w-16 rounded-lg object-cover ring-1 ring-border" />
+                <img
+                  src={coverUrl}
+                  alt="capa"
+                  className="h-16 w-16 rounded-lg object-cover ring-1 ring-border"
+                />
               )}
               <Input type="file" accept="image/*" onChange={onPickImage} disabled={uploading} />
               {uploading && <span className="text-xs text-muted-foreground">enviando…</span>}
@@ -160,7 +207,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
             <div className="space-y-2">
               <Label>Rede</Label>
               <Select value={network} onValueChange={setNetwork}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="instagram">Instagram</SelectItem>
                   <SelectItem value="tiktok">TikTok</SelectItem>
@@ -172,7 +221,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
             <div className="space-y-2">
               <Label>Formato</Label>
               <Select value={format} onValueChange={setFormat}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="feed">Feed</SelectItem>
                   <SelectItem value="carrossel">Carrossel</SelectItem>
@@ -185,7 +236,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
             <div className="space-y-2">
               <Label>Status</Label>
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="rascunho">Rascunho</SelectItem>
                   <SelectItem value="aprovacao">Em aprovação</SelectItem>
@@ -199,12 +252,20 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
           </div>
           <div className="space-y-2">
             <Label>Agendar para</Label>
-            <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
+            <Input
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={(e) => setScheduledAt(e.target.value)}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={() => save.mutate()} disabled={save.isPending || !title}>Salvar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending || !title}>
+            Salvar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

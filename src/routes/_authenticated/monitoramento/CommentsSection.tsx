@@ -50,7 +50,7 @@ export default function CommentsSection({ accountId, comments, loading }: Props)
         onError: (err: any) => {
           toast.error(err.message);
         },
-      }
+      },
     );
   };
 
@@ -62,9 +62,7 @@ export default function CommentsSection({ accountId, comments, loading }: Props)
             {/* Avatar */}
             <Avatar className="w-10 h-10">
               <AvatarImage src="" />
-              <AvatarFallback>
-                {comment.from?.username?.[0]?.toUpperCase() || "?"}
-              </AvatarFallback>
+              <AvatarFallback>{comment.from?.username?.[0]?.toUpperCase() || "?"}</AvatarFallback>
             </Avatar>
 
             {/* Conteúdo */}
@@ -74,9 +72,7 @@ export default function CommentsSection({ accountId, comments, loading }: Props)
                   <p className="font-semibold">
                     {comment.from?.name || comment.from?.username || "Usuário desconhecido"}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    @{comment.from?.username}
-                  </p>
+                  <p className="text-xs text-muted-foreground">@{comment.from?.username}</p>
                 </div>
                 <span className="text-xs text-muted-foreground">
                   {new Date(comment.timestamp).toLocaleDateString("pt-BR")}
@@ -131,11 +127,7 @@ export default function CommentsSection({ accountId, comments, loading }: Props)
                   >
                     Enviar
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setReplyingTo(null)}
-                  >
+                  <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)}>
                     Cancelar
                   </Button>
                 </div>

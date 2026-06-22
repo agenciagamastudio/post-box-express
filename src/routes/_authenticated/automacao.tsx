@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Zap, Play, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
-
 export const Route = createFileRoute("/_authenticated/automacao")({
   component: Automacao,
 });
@@ -57,7 +56,9 @@ function Automacao() {
       return r.json() as Promise<{ processed: number; published: number; failed: number }>;
     },
     onSuccess: (s) => {
-      toast.success(`Scheduler: ${s.processed} processado(s), ${s.published} publicado(s), ${s.failed} falha(s)`);
+      toast.success(
+        `Scheduler: ${s.processed} processado(s), ${s.published} publicado(s), ${s.failed} falha(s)`,
+      );
       qc.invalidateQueries({ queryKey: ["publish-log"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -70,7 +71,11 @@ function Automacao() {
         description="Status do publicador automático e histórico de publicações."
         action={
           <Button onClick={() => runNow.mutate()} disabled={runNow.isPending}>
-            {runNow.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+            {runNow.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Play className="mr-2 h-4 w-4" />
+            )}
             Testar publicação agora
           </Button>
         }
@@ -82,7 +87,11 @@ function Automacao() {
             <Zap className="h-4 w-4 text-primary" /> Backend
           </div>
           <div className="mt-2 text-lg font-semibold">
-            {healthErr ? <span className="text-destructive">Offline</span> : <span className="text-success">Online</span>}
+            {healthErr ? (
+              <span className="text-destructive">Offline</span>
+            ) : (
+              <span className="text-success">Online</span>
+            )}
           </div>
         </Card>
         <Card className="p-5">
@@ -113,7 +122,11 @@ function Automacao() {
                 {l.external_id ? ` · id: ${l.external_id}` : ""}
               </div>
             </div>
-            {l.mock && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">mock</span>}
+            {l.mock && (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                mock
+              </span>
+            )}
           </div>
         ))}
         {(!logs || logs.length === 0) && (

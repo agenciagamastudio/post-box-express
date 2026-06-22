@@ -116,7 +116,7 @@ export async function publishPost(post, conn) {
         image_url: post.cover_url,
         ...(post.caption ? { caption: post.caption } : {}),
         access_token: conn.access_token,
-      })
+      }),
     );
     // 2) aguarda o container ficar pronto (FINISHED) antes de publicar
     await waitContainerReady(c.id, conn.access_token);
@@ -125,7 +125,7 @@ export async function publishPost(post, conn) {
       igPost(`/${conn.ig_user_id}/media_publish`, {
         creation_id: c.id,
         access_token: conn.access_token,
-      })
+      }),
     );
     return { ok: true, mock: false, externalId: p.id, message: "Publicado no Instagram" };
   } catch (err) {
@@ -157,7 +157,8 @@ async function igPost(path, params) {
   if (j.error) {
     const e = new Error(j.error.message || JSON.stringify(j.error));
     e.code = j.error.code;
-    e.isTransient = r.status >= 500 || j.error.code === 4 || j.error.code === 17 || j.error.code === 32;
+    e.isTransient =
+      r.status >= 500 || j.error.code === 4 || j.error.code === 17 || j.error.code === 32;
     throw e;
   }
   return j;

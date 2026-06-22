@@ -19,16 +19,15 @@ export default function DMsSection({ accountId, dmsCount }: Props) {
             <p className="text-sm text-muted-foreground mb-4">
               {dmsCount ? `${dmsCount} conversa(s) ativa(s)` : "Carregando conversas..."}
             </p>
-            <Badge variant="outline">
-              Fase 3 - Em Desenvolvimento
-            </Badge>
+            <Badge variant="outline">Fase 3 - Em Desenvolvimento</Badge>
           </div>
         </div>
       </Card>
 
       <Card className="p-6 border-dashed">
         <p className="text-sm text-muted-foreground">
-          ℹ️ <strong>Em breve:</strong> Lista de conversas, histórico de mensagens e resposta inline (Fase 3).
+          ℹ️ <strong>Em breve:</strong> Lista de conversas, histórico de mensagens e resposta inline
+          (Fase 3).
         </p>
       </Card>
     </div>

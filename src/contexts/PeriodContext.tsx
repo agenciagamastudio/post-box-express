@@ -16,7 +16,10 @@ const PeriodContext = createContext<PeriodContextType | undefined>(undefined);
 
 export function PeriodProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<PeriodMode>("month");
-  const [range, setRange] = useState<{ from: Date; to: Date }>({ from: new Date(), to: new Date() });
+  const [range, setRange] = useState<{ from: Date; to: Date }>({
+    from: new Date(),
+    to: new Date(),
+  });
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -49,7 +52,7 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
         mode,
         from: range.from.toISOString(),
         to: range.to.toISOString(),
-      })
+      }),
     );
   }, [mode, range]);
 

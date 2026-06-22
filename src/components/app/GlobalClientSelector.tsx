@@ -45,10 +45,7 @@ export function GlobalClientSelector() {
             color: client.color || "#A78BFA",
           }}
         >
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{ background: client.color || "#A78BFA" }}
-          />
+          <div className="h-2 w-2 rounded-full" style={{ background: client.color || "#A78BFA" }} />
           {client.name}
           <button
             onClick={() => toggleClient(client.id)}
@@ -105,10 +102,7 @@ export function GlobalClientSelector() {
           {isFilterActive && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={false}
-                onCheckedChange={() => clearFilter()}
-              >
+              <DropdownMenuCheckboxItem checked={false} onCheckedChange={() => clearFilter()}>
                 <span className="text-sm text-destructive">Limpar filtro</span>
               </DropdownMenuCheckboxItem>
             </>

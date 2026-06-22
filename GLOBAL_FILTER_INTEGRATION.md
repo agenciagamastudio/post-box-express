@@ -26,13 +26,13 @@ AppShell (com ClientProvider)
 
 ## 📁 Arquivos criados
 
-| Arquivo | Tipo | Descrição |
-|---------|------|-----------|
-| `src/contexts/ClientContext.tsx` | Context | Global client state + localStorage |
-| `src/components/app/GlobalClientSelector.tsx` | Component | Seletor de cliente (top bar) |
-| `src/hooks/useGlobalClientFilter.ts` | Hook | Helper para aplicar filtros em queries |
-| `src/routes/_authenticated/route.tsx` | Route | Envolvido com ClientProvider |
-| `src/components/app/AppShell.tsx` | Component | Atualizado com top bar de filtro |
+| Arquivo                                       | Tipo      | Descrição                              |
+| --------------------------------------------- | --------- | -------------------------------------- |
+| `src/contexts/ClientContext.tsx`              | Context   | Global client state + localStorage     |
+| `src/components/app/GlobalClientSelector.tsx` | Component | Seletor de cliente (top bar)           |
+| `src/hooks/useGlobalClientFilter.ts`          | Hook      | Helper para aplicar filtros em queries |
+| `src/routes/_authenticated/route.tsx`         | Route     | Envolvido com ClientProvider           |
+| `src/components/app/AppShell.tsx`             | Component | Atualizado com top bar de filtro       |
 
 ---
 
@@ -90,10 +90,9 @@ export function Cal() {
   const { filters: calendarFilters } = useCalendarFilters();
 
   // Combinar: global + calendar filters
-  const allClients = [
-    ...globalClients,
-    ...calendarFilters.clients
-  ].filter((v, i, a) => a.indexOf(v) === i); // Unique
+  const allClients = [...globalClients, ...calendarFilters.clients].filter(
+    (v, i, a) => a.indexOf(v) === i,
+  ); // Unique
 
   // Query com clientes combinados
   const { data: posts } = useQuery({
@@ -347,6 +346,7 @@ export function MyPage() {
 ## 📊 Escalabilidade
 
 Suporta:
+
 - Ilimitados clientes (dropdown scrollable)
 - Múltiplos clientes selecionados (checkboxes)
 - Aplicado em qualquer query de Supabase

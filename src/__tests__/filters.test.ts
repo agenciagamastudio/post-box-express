@@ -133,7 +133,7 @@ describe("Calendar Filters", () => {
       const filters = { clients: ["client-1"], networks: [], onlyThisClient: true };
 
       const filtered = posts.filter((p) =>
-        filters.clients.length === 0 ? true : filters.clients.includes(p.client_id)
+        filters.clients.length === 0 ? true : filters.clients.includes(p.client_id),
       );
 
       expect(filtered).toHaveLength(2);
@@ -150,7 +150,7 @@ describe("Calendar Filters", () => {
       const filters = { clients: ["client-1", "client-2"], networks: [], onlyThisClient: false };
 
       const filtered = posts.filter((p) =>
-        filters.clients.length === 0 ? true : filters.clients.includes(p.client_id)
+        filters.clients.length === 0 ? true : filters.clients.includes(p.client_id),
       );
 
       expect(filtered).toHaveLength(2);
@@ -167,7 +167,7 @@ describe("Calendar Filters", () => {
       const filters = { clients: [], networks: ["instagram"], onlyThisClient: false };
 
       const filtered = posts.filter((p) =>
-        filters.networks.length === 0 ? true : filters.networks.includes(p.network)
+        filters.networks.length === 0 ? true : filters.networks.includes(p.network),
       );
 
       expect(filtered).toHaveLength(2);
@@ -185,8 +185,7 @@ describe("Calendar Filters", () => {
 
       const filtered = posts.filter((p) => {
         const clientMatch = filters.clients.length === 0 || filters.clients.includes(p.client_id);
-        const networkMatch =
-          filters.networks.length === 0 || filters.networks.includes(p.network);
+        const networkMatch = filters.networks.length === 0 || filters.networks.includes(p.network);
         return clientMatch && networkMatch;
       });
 
@@ -205,8 +204,7 @@ describe("Calendar Filters", () => {
 
       const filtered = posts.filter((p) => {
         const clientMatch = filters.clients.length === 0 || filters.clients.includes(p.client_id);
-        const networkMatch =
-          filters.networks.length === 0 || filters.networks.includes(p.network);
+        const networkMatch = filters.networks.length === 0 || filters.networks.includes(p.network);
         return clientMatch && networkMatch;
       });
 

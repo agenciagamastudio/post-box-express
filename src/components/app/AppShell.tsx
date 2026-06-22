@@ -2,7 +2,17 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, KanbanSquare, CalendarDays, Users, Building2, ListChecks, Wallet, LogOut, Settings, Zap, BarChart3,
+  LayoutDashboard,
+  KanbanSquare,
+  CalendarDays,
+  Users,
+  Building2,
+  ListChecks,
+  Wallet,
+  LogOut,
+  Settings,
+  Zap,
+  BarChart3,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { GlobalClientSelector } from "./GlobalClientSelector";
@@ -66,30 +76,30 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex h-16 items-center px-5 border-b border-sidebar-border">
             <Logo size="sm" />
           </div>
-        <nav className="flex-1 space-y-1 p-3">
-          {nav.map((n) => {
-            const active = path === n.to || path.startsWith(n.to + "/");
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  active
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent"
-                }`}
-              >
-                <n.icon className="h-4 w-4" />
-                {n.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="border-t border-sidebar-border p-3">
-          <Button variant="ghost" className="w-full justify-start gap-3" onClick={signOut}>
-            <LogOut className="h-4 w-4" /> Sair
-          </Button>
-        </div>
+          <nav className="flex-1 space-y-1 p-3">
+            {nav.map((n) => {
+              const active = path === n.to || path.startsWith(n.to + "/");
+              return (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    active
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent"
+                  }`}
+                >
+                  <n.icon className="h-4 w-4" />
+                  {n.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="border-t border-sidebar-border p-3">
+            <Button variant="ghost" className="w-full justify-start gap-3" onClick={signOut}>
+              <LogOut className="h-4 w-4" /> Sair
+            </Button>
+          </div>
         </aside>
         <main className="flex-1 overflow-x-hidden">{children}</main>
       </div>

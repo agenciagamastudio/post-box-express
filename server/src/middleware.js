@@ -58,7 +58,11 @@ export function validateQueryParams(req, res, next) {
   const { period, limit } = req.query;
 
   // Validar period (aplica apenas a rotas que usam period)
-  if (req.path.includes("/insights") || req.path.includes("/comments") || req.path.includes("/dms")) {
+  if (
+    req.path.includes("/insights") ||
+    req.path.includes("/comments") ||
+    req.path.includes("/dms")
+  ) {
     if (period && !["7days", "30days"].includes(period)) {
       return res.status(400).json({ error: "Period deve ser '7days' ou '30days'" });
     }

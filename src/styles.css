@@ -162,14 +162,19 @@
     color: var(--color-foreground);
     font-feature-settings: "ss01", "cv11";
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); }
+  .font-display {
+    font-family: var(--font-display);
+  }
   .text-gradient-primary {
     background: linear-gradient(135deg, #88ce11 0%, #a3d500 50%, #88ce11 100%);
     -webkit-background-clip: text;

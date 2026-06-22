@@ -1,8 +1,19 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Link2, MessageSquare, Pencil, Send } from "lucide-react";
 
-type Review = { comment: string | null; status: string; reviewer_name: string | null; created_at: string };
+type Review = {
+  comment: string | null;
+  status: string;
+  reviewer_name: string | null;
+  created_at: string;
+};
 export type DetailPost = {
   id: string;
   title: string;
@@ -61,15 +72,23 @@ export function PostDetailDialog({
 
         <div className="space-y-4">
           {post.cover_url && (
-            <img src={post.cover_url} alt={post.title} className="aspect-square w-full rounded-xl object-cover" />
+            <img
+              src={post.cover_url}
+              alt={post.title}
+              className="aspect-square w-full rounded-xl object-cover"
+            />
           )}
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-full bg-accent px-2 py-0.5 text-accent-foreground">
               {STATUS[post.status] ?? post.status}
             </span>
-            {post.clients?.name && <span className="text-muted-foreground">{post.clients.name}</span>}
-            <span className="text-muted-foreground">{post.network} · {post.format}</span>
+            {post.clients?.name && (
+              <span className="text-muted-foreground">{post.clients.name}</span>
+            )}
+            <span className="text-muted-foreground">
+              {post.network} · {post.format}
+            </span>
           </div>
 
           {post.caption && (
@@ -93,14 +112,18 @@ export function PostDetailDialog({
           {/* Histórico de feedbacks (até 3) */}
           <div>
             <div className="mb-2 flex items-center gap-1 text-xs font-medium text-muted-foreground">
-              <MessageSquare className="h-3.5 w-3.5" /> Pedidos de ajuste do cliente ({feedbacks.length})
+              <MessageSquare className="h-3.5 w-3.5" /> Pedidos de ajuste do cliente (
+              {feedbacks.length})
             </div>
             {feedbacks.length === 0 ? (
               <p className="text-xs text-muted-foreground">Nenhum pedido de ajuste.</p>
             ) : (
               <div className="space-y-2">
                 {feedbacks.map((f, i) => (
-                  <div key={i} className="rounded-md border border-destructive/30 bg-destructive/10 p-2 text-xs">
+                  <div
+                    key={i}
+                    className="rounded-md border border-destructive/30 bg-destructive/10 p-2 text-xs"
+                  >
                     <div className="mb-0.5 font-medium text-destructive">
                       {f.reviewer_name || "Cliente"} · {fmt(f.created_at)}
                     </div>

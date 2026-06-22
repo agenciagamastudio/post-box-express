@@ -29,7 +29,9 @@ router.post("/generate-link", async (req, res) => {
       .single();
 
     if (!conn) {
-      return res.status(404).json({ error: "Conta Instagram não encontrada ou não pertence a este cliente" });
+      return res
+        .status(404)
+        .json({ error: "Conta Instagram não encontrada ou não pertence a este cliente" });
     }
 
     // Gerar token aleatório (32 caracteres)

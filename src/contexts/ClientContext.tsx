@@ -29,7 +29,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
   const toggleClient = (clientId: string) => {
     setSelectedClients((prev) =>
-      prev.includes(clientId) ? prev.filter((c) => c !== clientId) : [...prev, clientId]
+      prev.includes(clientId) ? prev.filter((c) => c !== clientId) : [...prev, clientId],
     );
   };
 

@@ -84,7 +84,12 @@ router.get("/comments/:accountId", async (req, res) => {
       // Em mock mode, retornar dados simulados
       if (isMock) {
         const result = await fetchComments(accountId, "mock-token", limit);
-        return res.json({ success: true, comments_count: result.comments?.length || 0, comments: result.comments, mock: true });
+        return res.json({
+          success: true,
+          comments_count: result.comments?.length || 0,
+          comments: result.comments,
+          mock: true,
+        });
       }
       return res.status(404).json({ error: "Conta Instagram não encontrada" });
     }
@@ -107,7 +112,7 @@ router.get("/comments/:accountId", async (req, res) => {
           replied_to_id: comment.replied_to_id || null,
           synced_at: new Date().toISOString(),
         },
-        { onConflict: "account_id,comment_id" }
+        { onConflict: "account_id,comment_id" },
       );
     }
 
@@ -137,7 +142,11 @@ router.get("/dms/:accountId", async (req, res) => {
       // Em mock mode, retornar dados simulados
       if (isMock) {
         const result = await fetchConversations(accountId, "mock-token");
-        return res.json({ success: true, conversations_count: result.conversations?.length || 0, mock: true });
+        return res.json({
+          success: true,
+          conversations_count: result.conversations?.length || 0,
+          mock: true,
+        });
       }
       return res.status(404).json({ error: "Conta Instagram não encontrada" });
     }
@@ -162,7 +171,7 @@ router.get("/dms/:accountId", async (req, res) => {
             is_from_me: msg.from?.username === conn.ig_user_id, // Simplificado
             synced_at: new Date().toISOString(),
           },
-          { onConflict: "account_id,conversation_id" }
+          { onConflict: "account_id,conversation_id" },
         );
       }
     }
