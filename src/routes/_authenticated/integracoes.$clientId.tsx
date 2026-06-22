@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -23,7 +23,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/integracoes/$clientId")({
@@ -45,6 +45,22 @@ function Integracoes() {
   const qc = useQueryClient();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [search, setSearch] = useState("");
+
+  // Detectar conexão bem-sucedida via query param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const igStatus = params.get("ig");
+
+    if (igStatus === "connected") {
+      toast.success("✓ Instagram conectado com sucesso!");
+      qc.invalidateQueries({ queryKey: ["ig-connection", clientId] });
+      // Remover o param da URL
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (igStatus === "error") {
+      const msg = params.get("msg");
+      toast.error(`Erro ao conectar: ${msg || "Tente novamente"}`);
+    }
+  }, [clientId, qc]);
 
   const { data: client } = useQuery({
     queryKey: ["client", clientId],
@@ -90,10 +106,36 @@ function Integracoes() {
   const connectLink = `${window.location.origin}/auth/instagram/start?client_id=${clientId}`;
 
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [shortLink, setShortLink] = useState<string | null>(null);
 
   const handleConnectInstagram = () => {
     setIsConnecting(true);
     window.location.href = connectLink;
+  };
+
+  const generateShortLink = async () => {
+    try {
+      setIsGeneratingLink(true);
+      const res = await fetch("http://localhost:8787/api/instagram/auth-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId }),
+      });
+      if (!res.ok) throw new Error("Falha ao gerar link curto");
+      const { short_url } = await res.json();
+      setShortLink(short_url);
+      try {
+        await navigator.clipboard.writeText(short_url);
+        toast.success("Link curto copiado!");
+      } catch {
+        toast.success(`Link gerado: ${short_url}`);
+      }
+    } catch (err) {
+      toast.error("Erro ao gerar link curto");
+    } finally {
+      setIsGeneratingLink(false);
+    }
   };
 
   const disconnect = useMutation({
@@ -155,6 +197,44 @@ function Integracoes() {
           Gerar e copiar link do portal
         </Button>
       </Card>
+
+      {/* Card: Link curto para compartilhar */}
+      {connected && (
+        <Card className="mt-6 p-5 border-primary/30 bg-primary/5">
+          <div className="space-y-3">
+            <div>
+              <div className="text-sm font-medium">Compartilhar com cliente</div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Gere um link curto para enviar via WhatsApp ou email
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={generateShortLink}
+              disabled={isGeneratingLink}
+              className="w-full"
+            >
+              {isGeneratingLink ? (
+                <>
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                  Gerando link...
+                </>
+              ) : (
+                <>
+                  <Copy className="mr-1 h-4 w-4" />
+                  Gerar link curto
+                </>
+              )}
+            </Button>
+            {shortLink && (
+              <div className="rounded-lg bg-muted px-3 py-2 text-xs font-mono text-muted-foreground break-all">
+                {shortLink}
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
 
       {/* Plataformas */}
       <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">

@@ -106,6 +106,55 @@ app.post("/scheduler/run", async (_req, res) => {
   }
 });
 
+// Gera um link curto para compartilhar com o cliente (sem precisar de login).
+// Retorna { short_code, short_url }.
+app.post("/api/instagram/auth-link", async (req, res) => {
+  try {
+    const { client_id } = req.body || {};
+    if (!client_id) return res.status(400).json({ error: "Faltou client_id" });
+
+    // Gera um short code único (6 caracteres)
+    const shortCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    // Armazena o mapping na tabela (criar se não existir)
+    const { error } = await admin.from("instagram_auth_links").upsert(
+      {
+        short_code: shortCode,
+        client_id: String(client_id),
+        created_at: new Date().toISOString(),
+      },
+      { onConflict: "short_code" },
+    );
+
+    if (error) throw new Error(error.message);
+
+    const shortUrl = `${APP_URL}/ig/${shortCode}`;
+    res.json({ ok: true, short_code: shortCode, short_url: shortUrl });
+  } catch (err) {
+    console.error("[instagram auth-link]", err.message);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// Redirect do short code para a URL de OAuth completa.
+// Exemplo: /ig/ABC123 → /auth/instagram/start?client_id=...
+app.get("/ig/:shortCode", async (req, res) => {
+  try {
+    const { data } = await admin
+      .from("instagram_auth_links")
+      .select("client_id")
+      .eq("short_code", String(req.params.shortCode).toUpperCase())
+      .maybeSingle();
+
+    if (!data) return res.status(404).send("Link não encontrado ou expirou.");
+
+    res.redirect(`/auth/instagram/start?client_id=${encodeURIComponent(data.client_id)}`);
+  } catch (err) {
+    console.error("[ig redirect]", err.message);
+    res.status(500).send("Erro ao processar link. Tente novamente.");
+  }
+});
+
 // Início do OAuth (Instagram Business Login). Enquanto o app do Instagram não
 // estiver configurado (IG_APP_ID vazio), explica o que falta em vez de quebrar.
 app.get("/auth/instagram/start", async (req, res) => {
