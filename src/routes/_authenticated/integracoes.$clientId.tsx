@@ -89,6 +89,13 @@ function Integracoes() {
   const connected = conn?.status === "connected";
   const connectLink = `${window.location.origin}/auth/instagram/start?client_id=${clientId}`;
 
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const handleConnectInstagram = () => {
+    setIsConnecting(true);
+    window.location.href = connectLink;
+  };
+
   const disconnect = useMutation({
     mutationFn: async () => {
       if (!conn) return;
@@ -101,15 +108,6 @@ function Integracoes() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
-
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(connectLink);
-      toast.success("Link copiado — envie para o cliente conectar");
-    } catch {
-      toast.error("Não foi possível copiar");
-    }
-  };
 
   const portalLink = async () => {
     // Gera (ou reaproveita) o link do portal do cliente (calendário + status).
@@ -145,21 +143,6 @@ function Integracoes() {
         description={`Gerencie as conexões com redes sociais de ${client?.name ?? "este cliente"}.`}
       />
 
-      {/* Gerar link para cliente conectar */}
-      <Card className="mt-6 p-5">
-        <div className="text-sm font-medium">Gerar link para o cliente conectar</div>
-        <p className="mb-3 mt-1 text-xs text-muted-foreground">
-          Envie este link para o cliente abrir, fazer login no Instagram dele e autorizar — sem
-          precisar da senha dele.
-        </p>
-        <div className="flex gap-2">
-          <Input readOnly value={connectLink} className="font-mono text-xs" />
-          <Button variant="outline" onClick={copyLink}>
-            <Copy className="mr-1 h-4 w-4" />
-            Copiar
-          </Button>
-        </div>
-      </Card>
 
       {/* Portal do cliente: calendário + status */}
       <Card className="mt-3 p-5">
@@ -176,19 +159,46 @@ function Integracoes() {
       {/* Plataformas */}
       <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {/* Instagram (ativo) */}
-        <Card className="flex flex-col gap-3 p-5">
-          <div className="flex items-center gap-2">
-            <Instagram className="h-5 w-5 text-primary" />
-            <span className="font-medium">Via Instagram</span>
+        <Card
+          className={`flex flex-col gap-4 p-6 ${
+            connected
+              ? "border-success/50 bg-success/5"
+              : "border-primary/30 bg-primary/5"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2">
+                <Instagram className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-medium">Instagram</div>
+                <div
+                  className={`text-xs font-medium ${
+                    connected ? "text-success" : "text-muted-foreground"
+                  }`}
+                >
+                  {connected ? `✓ Conectado` : "Não conectado"}
+                </div>
+              </div>
+            </div>
+            {connected && (
+              <CheckCircle2 className="h-5 w-5 text-success" />
+            )}
           </div>
-          <span className={`text-xs ${connected ? "text-success" : "text-muted-foreground"}`}>
-            {connected ? `Conectado ${conn?.ig_username ?? ""}` : "Não conectado"}
-          </span>
+
+          {connected && (
+            <div className="space-y-1 rounded-lg bg-muted/50 p-3 text-xs">
+              <div className="font-medium text-muted-foreground">Conta conectada</div>
+              <div className="text-foreground font-medium">{conn?.ig_username ?? "Instagram"}</div>
+            </div>
+          )}
+
           {connected ? (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="justify-start"
+              className="w-full justify-center"
               onClick={() => disconnect.mutate()}
               disabled={disconnect.isPending}
             >
@@ -201,13 +211,12 @@ function Integracoes() {
             </Button>
           ) : (
             <Button
-              variant="outline"
-              size="sm"
-              className="justify-start"
+              size="lg"
+              className="w-full"
               onClick={() => setConfirmOpen(true)}
             >
-              <Instagram className="mr-1 h-4 w-4" />
-              Integrar
+              <Instagram className="mr-2 h-4 w-4" />
+              Conectar Agora
             </Button>
           )}
         </Card>
@@ -279,36 +288,56 @@ function Integracoes() {
 
       {/* Confirmação Instagram */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Instagram className="h-5 w-5 text-primary" /> Conectar o Instagram
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Instagram className="h-5 w-5 text-primary" />
+              Conectar conta do Instagram
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <p className="text-muted-foreground">
-              Você será redirecionado para o Instagram. Faça login com a conta que será gerenciada e
-              autorize a conexão para voltar ao GamaGit.
+              Você será redirecionado para o Instagram para autorizar a conexão com segurança.
+              Não precisamos da sua senha.
             </p>
-            <div className="rounded-lg border border-border bg-muted/40 p-3">
-              <p className="mb-1 font-medium">Limitações desta conexão</p>
-              <ul className="list-disc pl-5 text-muted-foreground">
-                <li>Não permite convidar coautores (collab posts).</li>
-                <li>Não permite marcar localização nas publicações.</li>
+
+            <div className="space-y-2 rounded-lg bg-primary/5 border border-primary/20 p-4">
+              <p className="font-medium text-primary">O que isso permite:</p>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary/70">✓</span>
+                  <span>Publicar posts no seu feed do Instagram</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary/70">✓</span>
+                  <span>Gerenciar calendário de publicações</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary/70">✓</span>
+                  <span>Visualizar insights e engajamento</span>
+                </li>
               </ul>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
               Cancelar
             </Button>
             <Button
-              onClick={() => {
-                window.location.href = connectLink;
-              }}
+              onClick={handleConnectInstagram}
+              disabled={isConnecting}
             >
-              <Instagram className="mr-1 h-4 w-4" />
-              Continuar
+              {isConnecting ? (
+                <>
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                  Redirecionando...
+                </>
+              ) : (
+                <>
+                  <Instagram className="mr-1 h-4 w-4" />
+                  Autorizar no Instagram
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
