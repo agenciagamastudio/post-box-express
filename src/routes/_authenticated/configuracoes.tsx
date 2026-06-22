@@ -35,7 +35,7 @@ function Settings() {
 
   return (
     <div className="p-6 md:p-8">
-      <PageHeader title="Configurações" description="Seu perfil no Pode Postar." />
+      <PageHeader title="Configurações" description="Seu perfil no GamaGit." />
       <Card className="mt-6 max-w-lg space-y-4 p-6">
         <div className="space-y-2"><Label>Nome</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div className="space-y-2"><Label>E-mail</Label><Input value={email} disabled /></div>

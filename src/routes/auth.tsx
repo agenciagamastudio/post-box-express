@@ -11,8 +11,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — Pode Postar" },
-      { name: "description", content: "Acesse o Pode Postar para gerenciar posts, clientes e equipe." },
+      { title: "Entrar — GamaGit" },
+      { name: "description", content: "Acesse o GamaGit para gerenciar posts, clientes e equipe." },
     ],
   }),
   component: AuthPage,
@@ -66,7 +66,7 @@ function AuthPage() {
             Pare de perder briefing no WhatsApp. Entre e organize sua agenda de social media.
           </p>
         </div>
-        <p className="text-xs text-surface-dark-foreground/50">© Pode Postar</p>
+        <p className="text-xs text-surface-dark-foreground/50">© GamaGit</p>
       </div>
       <div className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">

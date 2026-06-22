@@ -12,4 +12,18 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Mesma origem: o frontend serve as páginas e faz proxy das chamadas do backend
+  // (publicação/OAuth/review/portal) para o servidor Node em :8787. Isso permite expor
+  // tudo sob um único domínio (ngrok estático / deploy).
+  vite: {
+    server: {
+      allowedHosts: true, // aceita o host do ngrok
+      proxy: {
+        "/api": { target: "http://localhost:8787", changeOrigin: true },
+        "/auth/instagram": { target: "http://localhost:8787", changeOrigin: true },
+        "/health": { target: "http://localhost:8787", changeOrigin: true },
+        "/scheduler": { target: "http://localhost:8787", changeOrigin: true },
+      },
+    },
+  },
 });

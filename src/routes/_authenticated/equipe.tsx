@@ -19,7 +19,7 @@ function Team() {
 
   return (
     <div className="p-6 md:p-8">
-      <PageHeader title="Equipe" description="Quem trabalha com você no Pode Postar." />
+      <PageHeader title="Equipe" description="Quem trabalha com você no GamaGit." />
       <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {members?.map((m) => (
           <Card key={m.id} className="flex items-center gap-3 p-4">

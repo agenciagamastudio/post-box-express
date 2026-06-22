@@ -23,6 +23,7 @@ router.get("/insights/:accountId", async (req, res) => {
   try {
     const { accountId } = req.params;
     const { period = "7days" } = req.query;
+    const isMock = String(process.env.PUBLISH_MOCK).toLowerCase() === "true";
 
     // 1. Buscar conexão Instagram do Supabase
     const { data: conn, error } = await admin
@@ -32,23 +33,30 @@ router.get("/insights/:accountId", async (req, res) => {
       .single();
 
     if (error || !conn) {
+      // Em mock mode, retornar dados simulados mesmo se conta não existir
+      if (isMock) {
+        const insightsResponse = await fetchInsights(accountId, "mock-token", period);
+        const insightsArray = insightsResponse.insights || [];
+        return res.json({ success: true, insights: insightsArray, mock: true });
+      }
       return res.status(404).json({ error: "Conta Instagram não encontrada" });
     }
 
     // 2. Buscar insights da Graph API
-    const insights = await fetchInsights(conn.ig_user_id, conn.access_token, period);
+    const insightsResponse = await fetchInsights(conn.ig_user_id, conn.access_token, period);
+    const insightsArray = insightsResponse.insights || [];
 
     // 3. Atualizar cache no Supabase
-    await supabase
+    await admin
       .from("instagram_connections")
       .update({
-        insights_cache: insights,
+        insights_cache: insightsArray,
         insights_updated_at: new Date().toISOString(),
         insights_period: period,
       })
       .eq("id", accountId);
 
-    res.json({ success: true, insights });
+    res.json({ success: true, insights: insightsArray });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -63,6 +71,7 @@ router.get("/comments/:accountId", async (req, res) => {
   try {
     const { accountId } = req.params;
     const { limit = 25 } = req.query;
+    const isMock = String(process.env.PUBLISH_MOCK).toLowerCase() === "true";
 
     // 1. Buscar conexão
     const { data: conn, error } = await admin
@@ -72,6 +81,11 @@ router.get("/comments/:accountId", async (req, res) => {
       .single();
 
     if (error || !conn) {
+      // Em mock mode, retornar dados simulados
+      if (isMock) {
+        const result = await fetchComments(accountId, "mock-token", limit);
+        return res.json({ success: true, comments_count: result.comments?.length || 0, comments: result.comments, mock: true });
+      }
       return res.status(404).json({ error: "Conta Instagram não encontrada" });
     }
 
@@ -81,7 +95,7 @@ router.get("/comments/:accountId", async (req, res) => {
 
     // 3. Sincronizar com instagram_comments
     for (const comment of comments) {
-      await supabase.from("instagram_comments").upsert(
+      await admin.from("instagram_comments").upsert(
         {
           account_id: accountId,
           comment_id: comment.id,
@@ -110,6 +124,7 @@ router.get("/comments/:accountId", async (req, res) => {
 router.get("/dms/:accountId", async (req, res) => {
   try {
     const { accountId } = req.params;
+    const isMock = String(process.env.PUBLISH_MOCK).toLowerCase() === "true";
 
     // 1. Buscar conexão
     const { data: conn, error } = await admin
@@ -119,6 +134,11 @@ router.get("/dms/:accountId", async (req, res) => {
       .single();
 
     if (error || !conn) {
+      // Em mock mode, retornar dados simulados
+      if (isMock) {
+        const result = await fetchConversations(accountId, "mock-token");
+        return res.json({ success: true, conversations_count: result.conversations?.length || 0, mock: true });
+      }
       return res.status(404).json({ error: "Conta Instagram não encontrada" });
     }
 
@@ -132,7 +152,7 @@ router.get("/dms/:accountId", async (req, res) => {
       const messages = msgs.messages || [];
 
       for (const msg of messages) {
-        await supabase.from("instagram_dms").upsert(
+        await admin.from("instagram_dms").upsert(
           {
             account_id: accountId,
             conversation_id: conv.id,

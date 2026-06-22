@@ -15,9 +15,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Pode Postar — Gestão de social media em um único lugar" },
+      { title: "GamaGit — Gestão de social media em um único lugar" },
       { name: "description", content: "Aprovação de conteúdo, agendamento, clientes, equipe e financeiro para social medias e agências. Pare de perder briefing no WhatsApp." },
-      { property: "og:title", content: "Pode Postar" },
+      { property: "og:title", content: "GamaGit" },
       { property: "og:description", content: "Organize a rotina, acelere aprovações e reduza o trabalho manual." },
     ],
   }),
@@ -120,7 +120,7 @@ function Landing() {
             A notícia boa é que
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold md:text-4xl">
-            Agora existe o <span className="text-gradient-primary">Pode Postar</span>
+            Agora existe o <span className="text-gradient-primary">GamaGit</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             Reunimos tudo o que você precisa em um único lugar: aprovação, agendamento,
@@ -180,7 +180,7 @@ function Landing() {
       <footer className="border-t border-border/60 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-muted-foreground md:flex-row">
           <Logo size="sm" />
-          <p>© {new Date().getFullYear()} Pode Postar. Feito para social medias.</p>
+          <p>© {new Date().getFullYear()} GamaGit. Feito para social medias.</p>
         </div>
       </footer>
     </div>

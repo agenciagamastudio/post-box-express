@@ -1,0 +1,17 @@
+{
+  "name": "gamagit-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend GamaGit — scheduler de publicação Instagram + OAuth Meta",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}
