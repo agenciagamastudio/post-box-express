@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/app/PageHeader";
-import { CalendarClock, CheckCircle2, FileEdit, Clock } from "lucide-react";
+import { CalendarClock, CheckCircle2, FileEdit, Clock, Send } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app")({
   component: Dashboard,
@@ -52,12 +52,18 @@ function Dashboard() {
       icon: CalendarClock,
       color: "text-primary",
     },
+    {
+      label: "Publicados",
+      value: counts?.publicado ?? 0,
+      icon: Send,
+      color: "text-green-600",
+    },
   ];
 
   return (
     <div className="p-6 md:p-8">
       <PageHeader title="Visão geral" description="Acompanhe sua agenda de conteúdo." />
-      <div className="mt-6 grid gap-4 md:grid-cols-4">
+      <div className="mt-6 grid gap-4 md:grid-cols-5">
         {cards.map((c) => (
           <Card key={c.label} className="p-5">
             <div className="flex items-center justify-between">

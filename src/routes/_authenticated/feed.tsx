@@ -274,8 +274,11 @@ function FeedPage() {
               <div className="mt-4">
                 <EditPostModal
                   postId={sidebarEditId}
-                  open={sidebarOpen}
-                  onOpenChange={setSidebarOpen}
+                  open={true}
+                  onOpenChange={() => {
+                    setSidebarOpen(false);
+                    setSidebarEditId(null);
+                  }}
                   onSaved={() => {
                     setSidebarOpen(false);
                     setSidebarEditId(null);

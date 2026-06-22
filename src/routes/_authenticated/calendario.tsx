@@ -317,19 +317,19 @@ function Cal() {
         </div>
       </div>
 
+      {/* PostDialog para criar novo post (sempre disponível) */}
+      <PostDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} postId={editPostId} />
+
       {/* Modo Modal (padrão) */}
       {editMode === "modal" && (
-        <>
-          <PostDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} postId={editPostId} />
-          <PostDetailDialog
-            post={selectedPost}
-            open={isDetailOpen}
-            onOpenChange={setIsDetailOpen}
-            onEdit={handleEditPost}
-            onResend={handleResendPost}
-            onApprovalLink={handleApprovalLink}
-          />
-        </>
+        <PostDetailDialog
+          post={selectedPost}
+          open={isDetailOpen}
+          onOpenChange={setIsDetailOpen}
+          onEdit={handleEditPost}
+          onResend={handleResendPost}
+          onApprovalLink={handleApprovalLink}
+        />
       )}
 
       {/* Modo Inline */}
@@ -363,8 +363,11 @@ function Cal() {
               <div className="mt-4">
                 <EditPostModal
                   postId={sidebarEditPostId}
-                  open={sidebarOpen}
-                  onOpenChange={setSidebarOpen}
+                  open={true}
+                  onOpenChange={() => {
+                    setSidebarOpen(false);
+                    setSidebarEditPostId(null);
+                  }}
                   onSaved={() => {
                     setSidebarOpen(false);
                     setSidebarEditPostId(null);
