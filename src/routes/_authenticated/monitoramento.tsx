@@ -23,6 +23,7 @@ import { BarChart3, MessageSquare, Mail } from "lucide-react";
 import InsightsSection from "./monitoramento/InsightsSection";
 import CommentsSection from "./monitoramento/CommentsSection";
 import DMsSection from "./monitoramento/DMsSection";
+import ShareInsightsButton from "@/components/insights/ShareInsightsButton";
 
 export const Route = createFileRoute("/_authenticated/monitoramento")({
   component: MonitoringPage,
@@ -105,6 +106,12 @@ function MonitoringPage() {
               </SelectContent>
             </Select>
           </div>
+
+          <ShareInsightsButton
+            accountId={selectedAccountId}
+            clientId={accounts?.find((a: any) => a.id === selectedAccountId)?.client_id || null}
+            disabled={!selectedAccountId}
+          />
 
           <Button variant="outline" onClick={() => setSelectedAccountId(null)}>
             Limpar

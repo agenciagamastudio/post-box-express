@@ -57,13 +57,15 @@ export function loggingMiddleware(req, res, next) {
 export function validateQueryParams(req, res, next) {
   const { period, limit } = req.query;
 
-  // Validar period
-  if (period && !["7days", "30days"].includes(period)) {
-    return res.status(400).json({ error: "Period deve ser '7days' ou '30days'" });
+  // Validar period (aplica apenas a rotas que usam period)
+  if (req.path.includes("/insights") || req.path.includes("/comments") || req.path.includes("/dms")) {
+    if (period && !["7days", "30days"].includes(period)) {
+      return res.status(400).json({ error: "Period deve ser '7days' ou '30days'" });
+    }
   }
 
   // Validar limit
-  if (limit && (isNaN(limit) || limit < 1 || limit > 100)) {
+  if (limit && (isNaN(limit) || parseInt(limit) < 1 || parseInt(limit) > 100)) {
     return res.status(400).json({ error: "Limit deve estar entre 1 e 100" });
   }
 
