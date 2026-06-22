@@ -125,7 +125,7 @@ router.get("/:token", async (req, res) => {
       value: v.value,
     }));
 
-    // 6. Gerar HTML
+    // 6. Gerar HTML com GAMA Design System V3
     const html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -134,12 +134,27 @@ router.get("/:token", async (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Relatório Instagram - ${conn.ig_username}</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #88CE11;
+      --primary-dark: #6ba30d;
+      --background: #0a0a0a;
+      --surface: #161616;
+      --surface-light: #272727;
+      --text: #ffffff;
+      --text-muted: #a1a1a1;
+      --border: #333333;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+      color: var(--text);
       padding: 20px;
       min-height: 100vh;
     }
@@ -147,34 +162,42 @@ router.get("/:token", async (req, res) => {
     .container {
       max-width: 1000px;
       margin: 0 auto;
-      background: white;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 16px;
       padding: 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
     }
 
     .header {
       text-align: center;
       margin-bottom: 40px;
       padding-bottom: 20px;
-      border-bottom: 2px solid #f0f0f0;
+      border-bottom: 1px solid var(--border);
     }
 
     .header h1 {
-      font-size: 28px;
-      color: #333;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
       margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--primary) 0%, #a4d724 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .header .account {
       font-size: 18px;
-      color: #666;
+      color: var(--text);
       margin-bottom: 4px;
+      font-weight: 600;
     }
 
     .header .period {
       font-size: 14px;
-      color: #999;
+      color: var(--text-muted);
     }
 
     .metrics {
@@ -185,25 +208,33 @@ router.get("/:token", async (req, res) => {
     }
 
     .metric {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: linear-gradient(135deg, var(--surface-light) 0%, rgba(136, 206, 17, 0.05) 100%);
+      border: 1px solid rgba(136, 206, 17, 0.2);
+      color: var(--text);
       padding: 24px;
       border-radius: 12px;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .metric:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(136, 206, 17, 0.1);
     }
 
     .metric h3 {
-      font-size: 13px;
-      opacity: 0.9;
-      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
     .metric .value {
       font-size: 36px;
-      font-weight: 700;
+      font-weight: 800;
+      color: var(--primary);
     }
 
     .chart-section {
@@ -212,15 +243,19 @@ router.get("/:token", async (req, res) => {
 
     .section-title {
       font-size: 18px;
-      font-weight: 600;
-      color: #333;
+      font-weight: 700;
+      color: var(--text);
       margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .chart-container {
       position: relative;
       height: 300px;
-      background: #f9f9f9;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
     }
@@ -232,7 +267,7 @@ router.get("/:token", async (req, res) => {
     .table-container {
       overflow-x: auto;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
     }
 
     table {
@@ -242,56 +277,56 @@ router.get("/:token", async (req, res) => {
     }
 
     thead {
-      background: #f9f9f9;
+      background: var(--surface-light);
+      border-bottom: 2px solid var(--border);
     }
 
     th {
       padding: 16px;
       text-align: left;
-      border-bottom: 2px solid #e0e0e0;
       font-weight: 600;
-      color: #333;
+      color: var(--text);
     }
 
     td {
       padding: 12px 16px;
-      border-bottom: 1px solid #f0f0f0;
-      color: #666;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
     }
 
     tbody tr:hover {
-      background: #f9f9f9;
+      background: rgba(136, 206, 17, 0.05);
     }
 
     .footer {
       text-align: center;
       margin-top: 40px;
       padding-top: 20px;
-      border-top: 2px solid #f0f0f0;
-      color: #999;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
       font-size: 12px;
     }
 
     .badge {
       display: inline-block;
-      background: #e8f0fe;
-      color: #1967d2;
-      padding: 4px 12px;
+      background: var(--primary);
+      color: var(--background);
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 600;
-      margin-top: 8px;
+      font-weight: 700;
+      margin-top: 12px;
     }
 
     @media print {
-      body { background: white; padding: 0; }
-      .container { box-shadow: none; padding: 0; }
+      body { background: var(--background); padding: 0; }
+      .container { box-shadow: none; border: none; }
       .metric { page-break-inside: avoid; }
     }
 
     @media (max-width: 768px) {
       .container { padding: 20px; }
-      .header h1 { font-size: 22px; }
+      .header h1 { font-size: 24px; }
       .metric .value { font-size: 28px; }
     }
   </style>
@@ -299,10 +334,10 @@ router.get("/:token", async (req, res) => {
 <body>
   <div class="container">
     <div class="header">
-      <h1>📊 Relatório Instagram</h1>
-      <div class="account">${conn.ig_username}</div>
+      <h1>📊 Relatório de Alcance</h1>
+      <div class="account">@${conn.ig_username}</div>
       <div class="period">${formattedValues[0]?.date} até ${formattedValues[formattedValues.length - 1]?.date}</div>
-      <div class="badge">Alcance</div>
+      <div class="badge">✨ Instagram Insights</div>
     </div>
 
     <div class="metrics">
@@ -315,39 +350,38 @@ router.get("/:token", async (req, res) => {
         <div class="value">${values.length}</div>
       </div>
       <div class="metric">
-        <h3>Média/Dia</h3>
+        <h3>Média por Dia</h3>
         <div class="value">${average.toLocaleString("pt-BR")}</div>
       </div>
     </div>
 
     <div class="chart-section">
-      <h2 class="section-title">Evolução Diária</h2>
+      <h2 class="section-title">📈 Evolução Diária</h2>
       <div class="chart-container">
         <canvas id="chart"></canvas>
       </div>
     </div>
 
     <div class="table-section">
-      <h2 class="section-title">Dados Detalhados</h2>
+      <h2 class="section-title">📋 Dados Detalhados</h2>
       <div class="table-container">
         <table>
           <thead>
             <tr>
               <th>Data</th>
-              <th>Alcance</th>
+              <th style="text-align: right;">Alcance</th>
             </tr>
           </thead>
           <tbody>
-            ${formattedValues.map((row) => `<tr><td>${row.date}</td><td>${row.value.toLocaleString("pt-BR")}</td></tr>`).join("")}
+            ${formattedValues.map((row) => `<tr><td>${row.date}</td><td style="text-align: right; color: #88CE11; font-weight: 600;">${row.value.toLocaleString("pt-BR")}</td></tr>`).join("")}
           </tbody>
         </table>
       </div>
     </div>
 
     <div class="footer">
-      Relatório gerado em ${new Date().toLocaleString("pt-BR")}
-      <br>
-      Este link expira em 30 dias
+      Relatório gerado em ${new Date().toLocaleString("pt-BR")} 🔒<br>
+      <span style="color: #88CE11;">● Link válido por 30 dias</span>
     </div>
   </div>
 
@@ -358,15 +392,16 @@ router.get("/:token", async (req, res) => {
         {
           label: "Alcance",
           data: ${JSON.stringify(formattedValues.map((v) => v.value))},
-          borderColor: "#667eea",
-          backgroundColor: "rgba(102, 126, 234, 0.1)",
-          borderWidth: 2,
+          borderColor: "#88CE11",
+          backgroundColor: "rgba(136, 206, 17, 0.1)",
+          borderWidth: 3,
           tension: 0.4,
           fill: true,
-          pointRadius: 4,
-          pointBackgroundColor: "#667eea",
-          pointBorderColor: "white",
+          pointRadius: 5,
+          pointBackgroundColor: "#88CE11",
+          pointBorderColor: "#161616",
           pointBorderWidth: 2,
+          pointHoverRadius: 7,
         },
       ],
     };
@@ -385,15 +420,19 @@ router.get("/:token", async (req, res) => {
           y: {
             beginAtZero: true,
             max: ${Math.ceil((maxValue * 1.1) / 10) * 10},
+            grid: { color: "rgba(255, 255, 255, 0.05)" },
             ticks: {
+              color: "rgba(255, 255, 255, 0.7)",
               callback: function(value) {
                 return value.toLocaleString("pt-BR");
               },
             },
           },
           x: {
+            grid: { display: false },
             ticks: {
               maxTicksLimit: 10,
+              color: "rgba(255, 255, 255, 0.7)",
             },
           },
         },
