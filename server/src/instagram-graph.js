@@ -48,7 +48,7 @@ export async function fetchInsights(igUserId, token, period = "7days") {
   const until = new Date().toISOString();
 
   const data = await igGraphCall(`/${igUserId}/insights`, token, {
-    metric: "impressions,reach,profile_views,website_clicks,phone_call_clicks",
+    metric: "reach,profile_views",
     period: "day",
     since,
     until,
