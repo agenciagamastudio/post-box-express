@@ -25,8 +25,13 @@ export default function ShareInsightsButton({
   const [error, setError] = useState<string | null>(null);
 
   async function generateLink() {
-    if (!accountId || !clientId) {
-      setError("Selecione uma conta e cliente");
+    if (!accountId) {
+      setError("Selecione uma conta Instagram");
+      return;
+    }
+
+    if (!clientId) {
+      setError("Conta não tem cliente associado");
       return;
     }
 
@@ -44,11 +49,15 @@ export default function ShareInsightsButton({
         }),
       });
 
+      const responseText = await response.text();
+
       if (!response.ok) {
-        throw new Error("Falha ao gerar link");
+        console.error(`[generate-link] Status: ${response.status}, Body:`, responseText);
+        const errorData = JSON.parse(responseText);
+        throw new Error(errorData.error || "Falha ao gerar link");
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
       setUrl(data.url);
 
       // Copiar para clipboard automaticamente
@@ -57,7 +66,9 @@ export default function ShareInsightsButton({
 
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido");
+      const message = err instanceof Error ? err.message : "Erro desconhecido";
+      console.error("[generateLink error]", message);
+      setError(message);
     } finally {
       setLoading(false);
     }
