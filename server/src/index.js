@@ -6,6 +6,7 @@ import { exchangeCodeForConnection, buildAuthUrl } from "./instagram.js";
 import { instagramAccountsRouter } from "./instagram-accounts.js";
 import instagramMonitoringRouter from "./instagram-monitoring.js";
 import instagramInsightsPortalRouter from "./instagram-insights-portal.js";
+import setupRouter from "./setup.js";
 import { admin } from "./supabase.js";
 import {
   rateLimitMiddleware,
@@ -81,6 +82,9 @@ app.use("/api/instagram/monitoring", instagramMonitoringRouter);
 // Instagram Insights Portal — Shareable reports with tokens
 app.use("/api/instagram/insights/portal", instagramInsightsPortalRouter);
 app.use("/api/portal/insights", instagramInsightsPortalRouter);
+
+// Setup endpoints — Criar tabelas e infraestrutura
+app.use("/api/setup", setupRouter);
 
 // Publica um post imediatamente (ação manual da agência).
 app.post("/api/posts/:id/publish", async (req, res) => {

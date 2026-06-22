@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReviewTokenRouteImport } from './routes/review.$token'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
+import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
 import { Route as AuthenticatedMonitoramentoRouteImport } from './routes/_authenticated/monitoramento'
 import { Route as AuthenticatedKanbanRouteImport } from './routes/_authenticated/kanban'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
@@ -53,6 +54,11 @@ const PortalTokenRoute = PortalTokenRouteImport.update({
 const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
   id: '/tarefas',
   path: '/tarefas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMonitoramentoRoute =
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/monitoramento': typeof AuthenticatedMonitoramentoRoute
+  '/setup': typeof AuthenticatedSetupRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/portal/$token': typeof PortalTokenRoute
   '/review/$token': typeof ReviewTokenRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/kanban': typeof AuthenticatedKanbanRoute
   '/monitoramento': typeof AuthenticatedMonitoramentoRoute
+  '/setup': typeof AuthenticatedSetupRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/portal/$token': typeof PortalTokenRoute
   '/review/$token': typeof ReviewTokenRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/kanban': typeof AuthenticatedKanbanRoute
   '/_authenticated/monitoramento': typeof AuthenticatedMonitoramentoRoute
+  '/_authenticated/setup': typeof AuthenticatedSetupRoute
   '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/portal/$token': typeof PortalTokenRoute
   '/review/$token': typeof ReviewTokenRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/kanban'
     | '/monitoramento'
+    | '/setup'
     | '/tarefas'
     | '/portal/$token'
     | '/review/$token'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/kanban'
     | '/monitoramento'
+    | '/setup'
     | '/tarefas'
     | '/portal/$token'
     | '/review/$token'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financeiro'
     | '/_authenticated/kanban'
     | '/_authenticated/monitoramento'
+    | '/_authenticated/setup'
     | '/_authenticated/tarefas'
     | '/portal/$token'
     | '/review/$token'
@@ -267,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/tarefas'
       fullPath: '/tarefas'
       preLoaderRoute: typeof AuthenticatedTarefasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/setup': {
+      id: '/_authenticated/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof AuthenticatedSetupRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/monitoramento': {
@@ -352,6 +371,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedKanbanRoute: typeof AuthenticatedKanbanRoute
   AuthenticatedMonitoramentoRoute: typeof AuthenticatedMonitoramentoRoute
+  AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
   AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedIntegracoesClientIdRoute: typeof AuthenticatedIntegracoesClientIdRoute
 }
@@ -366,6 +386,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedKanbanRoute: AuthenticatedKanbanRoute,
   AuthenticatedMonitoramentoRoute: AuthenticatedMonitoramentoRoute,
+  AuthenticatedSetupRoute: AuthenticatedSetupRoute,
   AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedIntegracoesClientIdRoute: AuthenticatedIntegracoesClientIdRoute,
 }
