@@ -1,11 +1,17 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 
+interface InsightValue {
+  value: number;
+  end_time: string;
+}
+
 interface Insight {
-  date: string;
-  impressions: number;
-  reach: number;
-  profile_views: number;
-  [key: string]: string | number;
+  name: string;
+  period: string;
+  values: InsightValue[];
+  title: string;
+  description: string;
+  id: string;
 }
 
 interface Comment {
