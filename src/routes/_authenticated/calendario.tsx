@@ -220,6 +220,12 @@ function Cal() {
                 </div>
                 <div className="grid grid-cols-7 gap-1">
                   {days.map((d, i) => {
+                    const today = new Date();
+                    const isToday =
+                      d &&
+                      d.getDate() === today.getDate() &&
+                      d.getMonth() === today.getMonth() &&
+                      d.getFullYear() === today.getFullYear();
                     const dayPosts = d
                       ? (posts ?? []).filter(
                           (p) =>
@@ -229,10 +235,22 @@ function Cal() {
                     return (
                       <div
                         key={i}
-                        className={`min-h-[100px] rounded-lg border border-border p-2 text-left text-xs cursor-pointer hover:bg-accent/50 transition ${d ? "bg-card" : "bg-muted/30"}`}
+                        className={`min-h-[100px] rounded-lg border p-2 text-left text-xs cursor-pointer hover:bg-accent/50 transition ${
+                          isToday
+                            ? "border-primary bg-primary/10"
+                            : d
+                              ? "border-border bg-card"
+                              : "border-border bg-muted/30"
+                        }`}
                         onClick={() => d && handleDayClick(d)}
                       >
-                        {d && <div className="font-semibold">{d.getDate()}</div>}
+                        {d && (
+                          <div
+                            className={`font-semibold ${isToday ? "text-primary" : ""}`}
+                          >
+                            {d.getDate()}
+                          </div>
+                        )}
                         <div className="mt-1 space-y-1">
                           {dayPosts.slice(0, 3).map((p) => (
                             <div
