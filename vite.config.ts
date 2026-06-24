@@ -20,7 +20,8 @@ export default defineConfig({
       allowedHosts: true, // aceita o host do ngrok
       proxy: {
         "/api": { target: "http://localhost:8787", changeOrigin: true },
-        "/auth/instagram": { target: "http://localhost:8787", changeOrigin: true },
+        "/auth": { target: "http://localhost:8787", changeOrigin: true },
+        "/oauth": { target: "http://localhost:8787", changeOrigin: true },
         "/health": { target: "http://localhost:8787", changeOrigin: true },
         "/scheduler": { target: "http://localhost:8787", changeOrigin: true },
       },

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -43,6 +43,7 @@ type LogRow = {
 function Integracoes() {
   const { clientId } = Route.useParams();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -55,12 +56,12 @@ function Integracoes() {
       toast.success("✓ Instagram conectado com sucesso!");
       qc.invalidateQueries({ queryKey: ["ig-connection", clientId] });
       // Remover o param da URL
-      window.history.replaceState({}, "", window.location.pathname);
+      navigate({ to: `/integracoes/${clientId}`, replace: true });
     } else if (igStatus === "error") {
       const msg = params.get("msg");
       toast.error(`Erro ao conectar: ${msg || "Tente novamente"}`);
     }
-  }, [clientId, qc]);
+  }, [clientId, qc, navigate]);
 
   const { data: client } = useQuery({
     queryKey: ["client", clientId],
@@ -103,21 +104,21 @@ function Integracoes() {
   });
 
   const connected = conn?.status === "connected";
-  const connectLink = `${window.location.origin}/auth/instagram/start?client_id=${clientId}`;
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [shortLink, setShortLink] = useState<string | null>(null);
 
-  const handleConnectInstagram = () => {
+  const handleConnectInstagram = async () => {
     setIsConnecting(true);
-    window.location.href = connectLink;
+    // Redireciona para rota do backend (OAuth no servidor, seguro)
+    window.location.href = `/oauth/instagram/start?client_id=${clientId}`;
   };
 
   const generateShortLink = async () => {
     try {
       setIsGeneratingLink(true);
-      const res = await fetch("http://localhost:8787/api/instagram/auth-link", {
+      const res = await fetch("/api/instagram/auth-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId }),
@@ -153,7 +154,7 @@ function Integracoes() {
 
   const portalLink = async () => {
     try {
-      const res = await fetch("http://localhost:8787/api/client-portal-link", {
+      const res = await fetch("/api/client-portal-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId }),

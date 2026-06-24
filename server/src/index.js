@@ -158,7 +158,7 @@ app.get("/ig/:shortCode", async (req, res) => {
 
 // Início do OAuth (Instagram Business Login). Enquanto o app do Instagram não
 // estiver configurado (IG_APP_ID vazio), explica o que falta em vez de quebrar.
-app.get("/auth/instagram/start", async (req, res) => {
+app.get("/oauth/instagram/start", async (req, res) => {
   const clientId = req.query.client_id;
   if (!clientId) return res.status(400).send("Faltou client_id.");
   if (!process.env.IG_APP_ID) {
@@ -189,9 +189,9 @@ app.get("/auth/instagram/start", async (req, res) => {
 });
 
 // Callback do OAuth: troca code por token, descobre a conta IG e salva a conexão.
-app.get("/auth/instagram/callback", async (req, res) => {
+app.get("/oauth/instagram/callback", async (req, res) => {
   const { code, state: clientId, error: oauthErr } = req.query;
-  if (oauthErr) return res.redirect(`${APP_URL}/clientes?ig=error`);
+  if (oauthErr) return res.redirect(`${APP_URL}/integracoes/${clientId}?ig=error`);
   if (!code || !clientId) return res.status(400).send("Faltou code/state.");
   try {
     const conn = await exchangeCodeForConnection(String(code));
@@ -208,10 +208,10 @@ app.get("/auth/instagram/callback", async (req, res) => {
       { onConflict: "client_id" },
     );
     if (error) throw new Error(error.message);
-    res.redirect(`${APP_URL}/clientes?ig=connected`);
+    res.redirect(`${APP_URL}/integracoes/${clientId}?ig=connected`);
   } catch (err) {
     console.error("[oauth callback]", err.message);
-    res.redirect(`${APP_URL}/clientes?ig=error&msg=${encodeURIComponent(err.message)}`);
+    res.redirect(`${APP_URL}/integracoes/${clientId}?ig=error&msg=${encodeURIComponent(err.message)}`);
   }
 });
 

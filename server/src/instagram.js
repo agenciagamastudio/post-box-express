@@ -53,9 +53,19 @@ export async function exchangeCodeForConnection(code) {
     redirect_uri: redirect,
     code,
   });
-  const short = await fetch(IG_TOKEN, { method: "POST", body: form }).then((r) => r.json());
+  const tokenRes = await fetch(IG_TOKEN, { method: "POST", body: form });
+  let short;
+  try {
+    short = await tokenRes.json();
+  } catch (parseErr) {
+    const text = await tokenRes.text();
+    throw new Error(`Resposta inválida do Instagram: ${text} (status ${tokenRes.status})`);
+  }
   if (short.error_type || short.error_message) {
     throw new Error(short.error_message || "Falha ao trocar code por token");
+  }
+  if (!short.access_token) {
+    throw new Error(`Resposta sem access_token: ${JSON.stringify(short)}`);
   }
   const shortToken = short.access_token;
 

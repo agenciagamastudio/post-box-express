@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -20,9 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BarChart3, MessageSquare, Mail } from "lucide-react";
-import InsightsSection from "./monitoramento/InsightsSection";
-import CommentsSection from "./monitoramento/CommentsSection";
-import DMsSection from "./monitoramento/DMsSection";
+import InsightsSection from "@/components/monitoramento/InsightsSection";
+import CommentsSection from "@/components/monitoramento/CommentsSection";
+import DMsSection from "@/components/monitoramento/DMsSection";
 import ShareInsightsButton from "@/components/insights/ShareInsightsButton";
 
 export const Route = createFileRoute("/_authenticated/monitoramento")({
@@ -46,9 +46,11 @@ function MonitoringPage() {
   });
 
   // Auto-select primeira conta se houver
-  if (accounts && accounts.length > 0 && !selectedAccountId) {
-    setSelectedAccountId(accounts[0].id);
-  }
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccountId) {
+      setSelectedAccountId(accounts[0].id);
+    }
+  }, [accounts, selectedAccountId]);
 
   // Hooks para dados
   const { data: insights, isLoading: insightsLoading } = useInstagramInsights(
