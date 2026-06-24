@@ -154,7 +154,7 @@ function Cal() {
   const inlinePostToEdit = inlineEditPostId ? posts?.find((p) => p.id === inlineEditPostId) : null;
 
   return (
-    <div className="p-6 md:p-8 space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6">
       <div>
         <PageHeader
           title="Calendário"
@@ -177,7 +177,7 @@ function Cal() {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr_320px]">
         <div className="space-y-4">
           <Tabs value={view} onValueChange={(v) => setView(v as "month" | "week" | "progressive")}>
             <TabsList className="grid w-full grid-cols-3">

@@ -66,18 +66,18 @@ function MonitoringPage() {
   const { data: dms } = useInstagramDMs(selectedAccountId, !!selectedAccountId);
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Monitoramento Instagram</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Monitoramento Instagram</h1>
           <p className="text-muted-foreground">
             Acompanhe insights, comentários e mensagens das suas contas
           </p>
         </div>
 
         {/* Controles */}
-        <Card className="mb-6 p-4 flex gap-4 flex-wrap items-end">
+        <Card className="mb-6 p-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="flex-1 min-w-[200px]">
             <label className="text-sm font-medium mb-2 block">Conta Instagram</label>
             <Select value={selectedAccountId || ""} onValueChange={setSelectedAccountId}>

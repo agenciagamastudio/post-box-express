@@ -61,9 +61,9 @@ function Dashboard() {
   ];
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <PageHeader title="Visão geral" description="Acompanhe sua agenda de conteúdo." />
-      <div className="mt-6 grid gap-4 md:grid-cols-5">
+      <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
         {cards.map((c) => (
           <Card key={c.label} className="p-5">
             <div className="flex items-center justify-between">
@@ -80,7 +80,7 @@ function Dashboard() {
         <Card className="mt-3 divide-y divide-border">
           {upcoming && upcoming.length > 0 ? (
             upcoming.map((p) => (
-              <div key={p.id} className="flex items-center justify-between p-4">
+              <div key={p.id} className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-3">
                   <span
                     className="h-2.5 w-2.5 rounded-full"
