@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: gama_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - gama_network
+
+  # Simple HTTP proxy para rotas REST
+  rest:
+    image: postgrest/postgrest:v12.0.1
+    container_name: gama_rest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_APP_SETTINGS_JWT_SECRET: super-secret-jwt
+      PGRST_APP_SETTINGS_JWT_AUD: authenticated
+    ports:
+      - "3000:3000"
+    networks:
+      - gama_network
+
+networks:
+  gama_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
