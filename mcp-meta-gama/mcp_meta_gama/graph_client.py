@@ -58,6 +58,12 @@ class GraphClient:
         self, url: str, json: Optional[Dict[str, Any]] = None, data: Optional[Dict] = None
     ) -> Dict[str, Any]:
         """Make POST request with retry."""
+        if self.is_mock and "/media" in url:
+            if "media_publish" in url:
+                return self._post_media_publish_mock()
+            else:
+                return self._post_create_media_mock()
+
         return await self._with_retry(
             lambda: self._client.post(url, json=json, data=data)
         )
@@ -340,3 +346,13 @@ class GraphClient:
             "config": {"post_ql": 50},
             "quota_usage": {"post_ql": [{"calls": 10, "total_cputime": 0, "total_time": 0}]},
         }
+
+    def _post_create_media_mock(self) -> Dict[str, Any]:
+        """Return mock media creation response."""
+        import uuid
+        return {"id": str(uuid.uuid4())}
+
+    def _post_media_publish_mock(self) -> Dict[str, Any]:
+        """Return mock media publish response."""
+        import uuid
+        return {"id": str(uuid.uuid4())}

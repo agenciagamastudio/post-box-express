@@ -11,7 +11,7 @@ from mcp.types import Tool, TextContent
 
 from .token_store import TokenStore
 from .graph_client import GraphClient
-from .tools import accounts, insights, comments, limits
+from .tools import accounts, insights, comments, limits, publish
 
 # Setup logging
 logging.basicConfig(
@@ -118,6 +118,71 @@ async def get_publish_limit_impl(
     }
 
 
+async def publish_ig_image_impl(
+    client_id: str,
+    ig_user_id: str,
+    image_url: str,
+    caption: str = "",
+):
+    """Implementation of publish_ig_image tool."""
+    result = await publish.publish_ig_image(
+        client_id=client_id,
+        ig_user_id=ig_user_id,
+        image_url=image_url,
+        caption=caption,
+        token_store=token_store,
+        graph_client=graph_client,
+    )
+    return {
+        "content": [{"type": "text", "text": json.dumps(result, indent=2)}],
+        "is_error": not result.get("ok", False),
+    }
+
+
+async def publish_ig_reel_impl(
+    client_id: str,
+    ig_user_id: str,
+    video_url: str,
+    thumbnail_url: str = None,
+    caption: str = "",
+):
+    """Implementation of publish_ig_reel tool."""
+    result = await publish.publish_ig_reel(
+        client_id=client_id,
+        ig_user_id=ig_user_id,
+        video_url=video_url,
+        thumbnail_url=thumbnail_url,
+        caption=caption,
+        token_store=token_store,
+        graph_client=graph_client,
+    )
+    return {
+        "content": [{"type": "text", "text": json.dumps(result, indent=2)}],
+        "is_error": not result.get("ok", False),
+    }
+
+
+async def publish_ig_carousel_impl(
+    client_id: str,
+    ig_user_id: str,
+    media_urls: list,
+    caption: str = "",
+):
+    """Implementation of publish_ig_carousel tool."""
+    result = await publish.publish_ig_carousel(
+        client_id=client_id,
+        ig_user_id=ig_user_id,
+        media_urls=media_urls,
+        caption=caption,
+        token_store=token_store,
+        graph_client=graph_client,
+    )
+    return {
+        "content": [{"type": "text", "text": json.dumps(result, indent=2)}],
+        "is_error": not result.get("ok", False),
+    }
+
+
 async def run_mcp_server():
     """Main MCP server entry point."""
     global server
@@ -204,6 +269,65 @@ async def run_mcp_server():
                 "required": ["client_id"],
             },
         ),
+        Tool(
+            name="publish_ig_image",
+            description="Publish an image to Instagram Business account",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "client_id": {"type": "string", "description": "Client ID"},
+                    "ig_user_id": {"type": "string", "description": "Instagram user ID"},
+                    "image_url": {"type": "string", "description": "URL of the image"},
+                    "caption": {
+                        "type": "string",
+                        "description": "Caption for the post (optional)",
+                    },
+                },
+                "required": ["client_id", "ig_user_id", "image_url"],
+            },
+        ),
+        Tool(
+            name="publish_ig_reel",
+            description="Publish a reel to Instagram Business account (with polling)",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "client_id": {"type": "string", "description": "Client ID"},
+                    "ig_user_id": {"type": "string", "description": "Instagram user ID"},
+                    "video_url": {"type": "string", "description": "URL of the video"},
+                    "thumbnail_url": {
+                        "type": "string",
+                        "description": "URL of the thumbnail (optional)",
+                    },
+                    "caption": {
+                        "type": "string",
+                        "description": "Caption for the reel (optional)",
+                    },
+                },
+                "required": ["client_id", "ig_user_id", "video_url"],
+            },
+        ),
+        Tool(
+            name="publish_ig_carousel",
+            description="Publish a carousel (multiple media) to Instagram Business account",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "client_id": {"type": "string", "description": "Client ID"},
+                    "ig_user_id": {"type": "string", "description": "Instagram user ID"},
+                    "media_urls": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "URLs of media (at least 2)",
+                    },
+                    "caption": {
+                        "type": "string",
+                        "description": "Caption for the carousel (optional)",
+                    },
+                },
+                "required": ["client_id", "ig_user_id", "media_urls"],
+            },
+        ),
     ]
 
     for tool in tools:
@@ -235,12 +359,34 @@ async def run_mcp_server():
                 client_id=arguments.get("client_id"),
                 ig_user_id=arguments.get("ig_user_id"),
             )
+        elif name == "publish_ig_image":
+            return await publish_ig_image_impl(
+                client_id=arguments.get("client_id"),
+                ig_user_id=arguments.get("ig_user_id"),
+                image_url=arguments.get("image_url"),
+                caption=arguments.get("caption", ""),
+            )
+        elif name == "publish_ig_reel":
+            return await publish_ig_reel_impl(
+                client_id=arguments.get("client_id"),
+                ig_user_id=arguments.get("ig_user_id"),
+                video_url=arguments.get("video_url"),
+                thumbnail_url=arguments.get("thumbnail_url"),
+                caption=arguments.get("caption", ""),
+            )
+        elif name == "publish_ig_carousel":
+            return await publish_ig_carousel_impl(
+                client_id=arguments.get("client_id"),
+                ig_user_id=arguments.get("ig_user_id"),
+                media_urls=arguments.get("media_urls", []),
+                caption=arguments.get("caption", ""),
+            )
         else:
             logger.error(f"Unknown tool: {name}")
-            return ToolResponse(
-                content=[TextContent(type="text", text=f"Unknown tool: {name}")],
-                is_error=True,
-            )
+            return {
+                "content": [{"type": "text", "text": f"Unknown tool: {name}"}],
+                "is_error": True,
+            }
 
     logger.info("MCP server initialized, starting...")
     async with server:
