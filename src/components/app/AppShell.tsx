@@ -24,6 +24,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
 
 const nav = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard },
@@ -42,10 +43,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [searchOpen, setSearchOpen] = useState(false);
+  const { logout } = useAuth();
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    router.navigate({ to: "/auth", replace: true });
+    try {
+      await logout();
+      router.navigate({ to: "/auth", replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Fallback: still redirect to auth page even if logout failed
+      router.navigate({ to: "/auth", replace: true });
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import { instagramAccountsRouter } from "./instagram-accounts.js";
 import instagramMonitoringRouter from "./instagram-monitoring.js";
 import instagramInsightsPortalRouter from "./instagram-insights-portal.js";
 import setupRouter from "./setup.js";
+import authRouter from "./auth.js";
 import { admin } from "./supabase.js";
 import {
   rateLimitMiddleware,
@@ -73,6 +74,9 @@ app.get("/health", (_req, res) => {
     time: new Date().toISOString(),
   });
 });
+
+// Auth endpoints — Login, logout, refresh, profile
+app.use("/api/auth", authRouter);
 
 // Contas Instagram monitoradas (Fase 1: skeleton — Fase 2 implementa Graph API)
 app.use("/api/instagram", instagramAccountsRouter);

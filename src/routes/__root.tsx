@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ViewPreferencesProvider } from "@/contexts/ViewPreferencesContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 function NotFoundComponent() {
   return (
@@ -140,13 +141,15 @@ function RootComponent() {
   }, [router, queryClient]);
 
   return (
-    <ThemeProvider>
-      <ViewPreferencesProvider>
-        <QueryClientProvider client={queryClient}>
-          <Outlet />
-          <Toaster richColors position="top-right" />
-        </QueryClientProvider>
-      </ViewPreferencesProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <ViewPreferencesProvider>
+          <QueryClientProvider client={queryClient}>
+            <Outlet />
+            <Toaster richColors position="top-right" />
+          </QueryClientProvider>
+        </ViewPreferencesProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
