@@ -9,6 +9,28 @@ import { useState } from "react";
 import { PostDialog } from "@/components/app/PostDialog";
 import { PostDetailDialog, type DetailPost } from "@/components/app/PostDetailDialog";
 import { toast } from "sonner";
+import { type StatusType } from "@/types/posts";
+
+type PostReview = {
+  comment: string | null;
+  status: string;
+  reviewer_name: string | null;
+  created_at: string;
+};
+
+type KanbanPost = {
+  id: string;
+  title: string;
+  caption: string;
+  cover_url: string | null;
+  status: string;
+  network: string;
+  format: string;
+  scheduled_at: string | null;
+  published_at: string | null;
+  clients: { name: string; color: string } | null;
+  post_reviews: PostReview[];
+};
 
 export const Route = createFileRoute("/_authenticated/kanban")({
   component: Kanban,
@@ -44,11 +66,8 @@ function Kanban() {
   });
 
   const move = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("posts")
-        .update({ status: status as any })
-        .eq("id", id);
+    mutationFn: async ({ id, status }: { id: string; status: StatusType }) => {
+      const { error } = await supabase.from("posts").update({ status }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -134,28 +153,21 @@ function Kanban() {
                   <Card
                     key={p.id}
                     className="cursor-pointer p-3 transition hover:ring-1 hover:ring-primary/40"
-                    onClick={() => setDetail(p as any)}
+                    onClick={() => setDetail(p as unknown as DetailPost)}
                   >
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2 w-2 rounded-full"
-                        style={{ background: (p.clients as any)?.color ?? "#A78BFA" }}
+                        style={{ background: p.clients?.color ?? "#A78BFA" }}
                       />
-                      <span className="text-xs text-muted-foreground">
-                        {(p.clients as any)?.name}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{p.clients?.name}</span>
                     </div>
                     <div className="mt-1 line-clamp-2 text-sm font-medium">{p.title}</div>
                     <div className="mt-2 flex items-center gap-2 text-[10px] uppercase text-muted-foreground">
                       <span>{p.network}</span>·<span>{p.format}</span>
                     </div>
                     {(() => {
-                      const reviews = ((p as any).post_reviews ?? []) as Array<{
-                        comment: string | null;
-                        status: string;
-                        reviewer_name: string | null;
-                        created_at: string;
-                      }>;
+                      const reviews = p.post_reviews ?? [];
                       const change = reviews
                         .filter((r) => r.status === "changes_requested" && r.comment)
                         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];

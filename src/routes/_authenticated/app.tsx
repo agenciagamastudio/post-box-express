@@ -80,7 +80,10 @@ function Dashboard() {
         <Card className="mt-3 divide-y divide-border">
           {upcoming && upcoming.length > 0 ? (
             upcoming.map((p) => (
-              <div key={p.id} className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between">
+              <div
+                key={p.id}
+                className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between"
+              >
                 <div className="flex items-center gap-3">
                   <span
                     className="h-2.5 w-2.5 rounded-full"

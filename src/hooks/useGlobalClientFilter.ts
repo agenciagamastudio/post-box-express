@@ -29,12 +29,14 @@ export function useGlobalClientFilter() {
    * Build a WHERE clause para usar em queries
    * Exemplo: query.in('client_id', selectedClients)
    */
-  function applyToQuery<T>(query: T): T {
+  function applyToQuery<T extends { in: (column: string, values: string[]) => unknown }>(
+    query: T,
+  ): ReturnType<T["in"]> {
     if (!isFilterActive || selectedClients.length === 0) {
-      return query;
+      return query as unknown as ReturnType<T["in"]>;
     }
     // Retorna query com filter já aplicado (deve ser chamado após select)
-    return (query as any).in("client_id", selectedClients);
+    return query.in("client_id", selectedClients) as ReturnType<T["in"]>;
   }
 
   return {

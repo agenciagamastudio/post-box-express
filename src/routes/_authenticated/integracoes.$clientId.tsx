@@ -189,7 +189,6 @@ function Integracoes() {
         description={`Gerencie as conexões com redes sociais de ${client?.name ?? "este cliente"}.`}
       />
 
-
       {/* Portal do cliente: calendário + status */}
       <Card className="mt-3 p-5">
         <div className="text-sm font-medium">Portal do cliente (calendário + status)</div>
@@ -245,9 +244,7 @@ function Integracoes() {
         {/* Instagram (ativo) */}
         <Card
           className={`flex flex-col gap-4 p-6 ${
-            connected
-              ? "border-success/50 bg-success/5"
-              : "border-primary/30 bg-primary/5"
+            connected ? "border-success/50 bg-success/5" : "border-primary/30 bg-primary/5"
           }`}
         >
           <div className="flex items-center justify-between">
@@ -266,9 +263,7 @@ function Integracoes() {
                 </div>
               </div>
             </div>
-            {connected && (
-              <CheckCircle2 className="h-5 w-5 text-success" />
-            )}
+            {connected && <CheckCircle2 className="h-5 w-5 text-success" />}
           </div>
 
           {connected && (
@@ -294,11 +289,7 @@ function Integracoes() {
               Desconectar
             </Button>
           ) : (
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={() => setConfirmOpen(true)}
-            >
+            <Button size="lg" className="w-full" onClick={() => setConfirmOpen(true)}>
               <Instagram className="mr-2 h-4 w-4" />
               Conectar Agora
             </Button>
@@ -381,8 +372,8 @@ function Integracoes() {
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <p className="text-muted-foreground">
-              Você será redirecionado para o Instagram para autorizar a conexão com segurança.
-              Não precisamos da sua senha.
+              Você será redirecionado para o Instagram para autorizar a conexão com segurança. Não
+              precisamos da sua senha.
             </p>
 
             <div className="space-y-2 rounded-lg bg-primary/5 border border-primary/20 p-4">
@@ -407,10 +398,7 @@ function Integracoes() {
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
               Cancelar
             </Button>
-            <Button
-              onClick={handleConnectInstagram}
-              disabled={isConnecting}
-            >
+            <Button onClick={handleConnectInstagram} disabled={isConnecting}>
               {isConnecting ? (
                 <>
                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />

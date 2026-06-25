@@ -25,12 +25,26 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+type FinanceKind = "receber" | "pagar";
+
+type FinanceEntry = {
+  id: string;
+  client_id: string;
+  kind: FinanceKind;
+  description: string;
+  amount: number | string;
+  due_at: string | null;
+  paid_at: string | null;
+  created_by: string;
+  clients: { name: string; color: string } | null;
+};
+
 export const Route = createFileRoute("/_authenticated/financeiro")({ component: Finance });
 
 function Finance() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [kind, setKind] = useState("receber");
+  const [kind, setKind] = useState<FinanceKind>("receber");
   const [clientId, setClientId] = useState("");
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
@@ -62,7 +76,7 @@ function Finance() {
       if (!clientId) throw new Error("Escolha um cliente");
       const { error } = await supabase.from("finance_entries").insert({
         client_id: clientId,
-        kind: kind as any,
+        kind,
         description: desc,
         amount: Number(amount),
         due_at: due || null,
@@ -96,9 +110,15 @@ function Finance() {
     (acc, e) => {
       const v = Number(e.amount);
       if (e.kind === "receber") {
-        e.paid_at ? (acc.recebido += v) : (acc.aReceber += v);
+        if (e.paid_at) {
+          acc.recebido += v;
+        } else {
+          acc.aReceber += v;
+        }
+      } else if (e.paid_at) {
+        acc.pago += v;
       } else {
-        e.paid_at ? (acc.pago += v) : (acc.aPagar += v);
+        acc.aPagar += v;
       }
       return acc;
     },
@@ -192,18 +212,18 @@ function Finance() {
       </div>
 
       <Card className="mt-6 divide-y divide-border">
-        {entries?.map((e) => (
+        {entries?.map((e: FinanceEntry) => (
           <div key={e.id} className="flex items-center justify-between gap-4 p-4">
             <div className="flex items-center gap-3">
               <span
                 className="h-2.5 w-2.5 rounded-full"
-                style={{ background: (e.clients as any)?.color ?? "#A78BFA" }}
+                style={{ background: e.clients?.color ?? "#A78BFA" }}
               />
               <div>
                 <div className="font-medium">{e.description}</div>
                 <div className="text-xs text-muted-foreground">
-                  {(e.clients as any)?.name} · {e.kind === "receber" ? "A receber" : "A pagar"} ·
-                  vence {e.due_at ?? "—"}
+                  {e.clients?.name} · {e.kind === "receber" ? "A receber" : "A pagar"} · vence{" "}
+                  {e.due_at ?? "—"}
                 </div>
               </div>
             </div>

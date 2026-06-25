@@ -245,9 +245,7 @@ function Cal() {
                         onClick={() => d && handleDayClick(d)}
                       >
                         {d && (
-                          <div
-                            className={`font-semibold ${isToday ? "text-primary" : ""}`}
-                          >
+                          <div className={`font-semibold ${isToday ? "text-primary" : ""}`}>
                             {d.getDate()}
                           </div>
                         )}

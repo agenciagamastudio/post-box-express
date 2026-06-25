@@ -19,12 +19,18 @@ import { CSS } from "@dnd-kit/utilities";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { toast } from "sonner";
 
+export type ClientInfo = {
+  name?: string;
+  color?: string;
+};
+
 export type Post = {
   id: string;
   title: string;
   scheduled_at: string | null;
   network: string;
-  clients?: { name?: string; color?: string };
+  client_id?: string;
+  clients?: ClientInfo;
 };
 
 type WeekViewProps = {
@@ -58,8 +64,8 @@ function DraggablePost({ post, onPostClick }: { post: Post; onPostClick: (post: 
       }}
       className="cursor-grab active:cursor-grabbing truncate rounded px-2 py-1 text-xs font-medium transition-opacity hover:opacity-80"
       style={{
-        background: `${(post.clients as any)?.color ?? "#A78BFA"}22`,
-        color: (post.clients as any)?.color,
+        background: `${post.clients?.color ?? "#A78BFA"}22`,
+        color: post.clients?.color,
       }}
     >
       {post.title}
@@ -141,8 +147,8 @@ export function WeekView({
         return false;
       }
       if (filters.clients.length > 0) {
-        const clientId = (p as any).client_id;
-        if (!filters.clients.includes(clientId)) return false;
+        const clientId = p.client_id;
+        if (clientId && !filters.clients.includes(clientId)) return false;
       }
       return true;
     });

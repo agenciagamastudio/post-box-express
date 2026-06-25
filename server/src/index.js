@@ -211,7 +211,9 @@ app.get("/oauth/instagram/callback", async (req, res) => {
     res.redirect(`${APP_URL}/integracoes/${clientId}?ig=connected`);
   } catch (err) {
     console.error("[oauth callback]", err.message);
-    res.redirect(`${APP_URL}/integracoes/${clientId}?ig=error&msg=${encodeURIComponent(err.message)}`);
+    res.redirect(
+      `${APP_URL}/integracoes/${clientId}?ig=error&msg=${encodeURIComponent(err.message)}`,
+    );
   }
 });
 
@@ -223,7 +225,8 @@ app.post("/api/client-portal-link", async (req, res) => {
     if (!client_id) return res.status(400).json({ error: "Faltou client_id" });
 
     // Tenta upsert: se já existe, reaproveita; se não, cria novo com UUID
-    const token = crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const token =
+      crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
     const { data, error } = await admin
       .from("client_portal_links")

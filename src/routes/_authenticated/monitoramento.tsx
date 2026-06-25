@@ -25,16 +25,24 @@ import CommentsSection from "@/components/monitoramento/CommentsSection";
 import DMsSection from "@/components/monitoramento/DMsSection";
 import ShareInsightsButton from "@/components/insights/ShareInsightsButton";
 
+type PeriodType = "7days" | "30days";
+
+type InstagramConnection = {
+  id: string;
+  ig_username: string | null;
+  client_id: string;
+};
+
 export const Route = createFileRoute("/_authenticated/monitoramento")({
   component: MonitoringPage,
 });
 
 function MonitoringPage() {
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
-  const [period, setPeriod] = useState<"7days" | "30days">("7days");
+  const [period, setPeriod] = useState<PeriodType>("7days");
 
   // Buscar contas Instagram conectadas
-  const { data: accounts, isLoading: accountsLoading } = useQuery({
+  const { data: accounts, isLoading: accountsLoading } = useQuery<InstagramConnection[]>({
     queryKey: ["instagram-connections"],
     queryFn: async () => {
       const { data } = await supabase
@@ -85,7 +93,7 @@ function MonitoringPage() {
                 <SelectValue placeholder="Selecione uma conta" />
               </SelectTrigger>
               <SelectContent>
-                {accounts?.map((acc: any) => (
+                {accounts?.map((acc) => (
                   <SelectItem key={acc.id} value={acc.id}>
                     {acc.ig_username || `Cliente: ${acc.client_id}`}
                   </SelectItem>
@@ -96,7 +104,7 @@ function MonitoringPage() {
 
           <div className="flex-1 min-w-[200px]">
             <label className="text-sm font-medium mb-2 block">Período</label>
-            <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
+            <Select value={period} onValueChange={(v) => setPeriod(v as PeriodType)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -109,7 +117,7 @@ function MonitoringPage() {
 
           <ShareInsightsButton
             accountId={selectedAccountId}
-            clientId={accounts?.find((a: any) => a.id === selectedAccountId)?.client_id || null}
+            clientId={accounts?.find((a) => a.id === selectedAccountId)?.client_id || null}
             disabled={!selectedAccountId}
           />
 

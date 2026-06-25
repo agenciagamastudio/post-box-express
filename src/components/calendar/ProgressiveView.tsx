@@ -50,7 +50,7 @@ function PostCard<T extends ProgressivePost>({
   onClick: (post: T) => void;
 }) {
   const info = getStatusInfo(post.status);
-  const clientColor = (post.clients as any)?.color ?? "#A78BFA";
+  const clientColor = post.clients?.color ?? "#A78BFA";
 
   return (
     <button
@@ -72,7 +72,7 @@ function PostCard<T extends ProgressivePost>({
         <div className="truncate text-sm font-medium">{post.title}</div>
         <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="inline-block h-2 w-2 rounded-full" style={{ background: clientColor }} />
-          <span className="truncate">{(post.clients as any)?.name ?? "Sem cliente"}</span>
+          <span className="truncate">{post.clients?.name ?? "Sem cliente"}</span>
           <span>·</span>
           <span className="truncate capitalize">{post.network}</span>
           {post.scheduled_at && (

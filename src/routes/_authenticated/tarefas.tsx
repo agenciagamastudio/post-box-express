@@ -18,12 +18,14 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+type TaskStatus = "a_fazer" | "fazendo" | "feito";
+
 export const Route = createFileRoute("/_authenticated/tarefas")({ component: Tasks });
 
 const COLS = [
-  { id: "a_fazer", label: "A fazer" },
-  { id: "fazendo", label: "Fazendo" },
-  { id: "feito", label: "Feito" },
+  { id: "a_fazer" as const, label: "A fazer" },
+  { id: "fazendo" as const, label: "Fazendo" },
+  { id: "feito" as const, label: "Feito" },
 ] as const;
 
 function Tasks() {
@@ -66,11 +68,8 @@ function Tasks() {
   });
 
   const move = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("tasks")
-        .update({ status: status as any })
-        .eq("id", id);
+    mutationFn: async ({ id, status }: { id: string; status: TaskStatus }) => {
+      const { error } = await supabase.from("tasks").update({ status }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["tasks"] }),

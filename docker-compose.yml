@@ -1,0 +1,237 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: gama_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "-c search_path=public,extensions"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - supabase_network
+
+  # Supabase Auth Service
+  auth:
+    image: supabase/gotrue:v2.135.1
+    container_name: gama_auth
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      GOTRUE_JWT_SECRET: your-super-secret-jwt-token-change-this-in-production
+      GOTRUE_JWT_ADMIN_GROUP_NAME: admin
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_URI_ALLOW_LIST: http://localhost:3000,http://localhost:5173
+      GOTRUE_DISABLE_SIGNUP: false
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@example.com
+      GOTRUE_SMTP_HOST: mailhog
+      GOTRUE_SMTP_PORT: 1025
+      GOTRUE_SMTP_USER: ""
+      GOTRUE_SMTP_PASS: ""
+      GOTRUE_SMTP_SENDER_NAME: noreply
+      GOTRUE_MAILER_AUTOCONFIRM: true
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: true
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOTRUE_EXTERNAL_INSTAGRAM_ENABLED: false
+      GOTRUE_HOOK_MFA_VERIFICATION_ATTEMPT: http://functions:9000/functions/v1/inspect
+      GOTRUE_HOOK_CUSTOM_SMS_PROVIDER: http://functions:9000/functions/v1/inspect
+      GOTRUE_HOOK_PASSWORD_VERIFICATION_ATTEMPT: http://functions:9000/functions/v1/inspect
+    ports:
+      - "9999:9999"
+    networks:
+      - supabase_network
+    command: auth -j 50
+
+  # Supabase REST API
+  rest:
+    image: postgrest/postgrest:v12.0.1
+    container_name: gama_rest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: your-super-secret-jwt-token-change-this-in-production
+      PGRST_APP_SETTINGS_JWT_AUD: authenticated
+      PGRST_LOG_LEVEL: info
+      PGRST_OPENAPI_SERVER_PROXY_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    networks:
+      - supabase_network
+    command: postgrest
+
+  # Supabase Realtime
+  realtime:
+    image: supabase/realtime:v2.28.32
+    container_name: gama_realtime
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: postgres
+      DB_SSLMODE: disable
+      SECURE_CHANNELS: "true"
+      JWT_SECRET: your-super-secret-jwt-token-change-this-in-production
+      JWT_AUDIENCE: authenticated
+      LOG_LEVEL: info
+    ports:
+      - "4000:4000"
+    networks:
+      - supabase_network
+    command: /app/bin/realtime start --db-host postgres
+
+  # Supabase Storage
+  storage:
+    image: supabase/storage-api:v0.49.0
+    container_name: gama_storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY4ODIzNDYwMCwiZXhwIjoxODk2MDk0NjAwfQ.N5Y-hKk05hhTd9ufFdC5WEQvKdKNQq5C_dFGJ5WNr2U
+      SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjg4MjM0NjAwLCJleHAiOjE4OTYwOTQ2MDB9.sL4EJp7PVaX8Kx3PwdE9c5R7f4L5S6K1x9Z2V1B5Y3A
+      PGOPTIONS: -c search_path=storage,public
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      PGRST_HOST: rest
+      PGRST_PORT: 3000
+      PGRST_PROTOCOL: http
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+    ports:
+      - "5000:5000"
+    volumes:
+      - storage_data:/var/lib/storage
+    networks:
+      - supabase_network
+
+  # Supabase Vector (pgvector)
+  pgvector:
+    image: pgvector/pgvector:pg15
+    container_name: gama_pgvector
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgvector
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+    networks:
+      - supabase_network
+
+  # Mail Server (for testing email)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: gama_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - supabase_network
+
+  # Supabase Studio (Dashboard)
+  studio:
+    image: supabase/studio:20240730-5ebb4b5
+    container_name: gama_studio
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SUPABASE_URL: http://localhost:8000
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY4ODIzNDYwMCwiZXhwIjoxODk2MDk0NjAwfQ.N5Y-hKk05hhTd9ufFdC5WEQvKdKNQq5C_dFGJ5WNr2U
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjg4MjM0NjAwLCJleHAiOjE4OTYwOTQ2MDB9.sL4EJp7PVaX8Kx3PwdE9c5R7f4L5S6K1x9Z2V1B5Y3A
+      LOGTO_ENDPOINT: http://localhost:3001
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "3001:3000"
+    networks:
+      - supabase_network
+
+  # Kong API Gateway (Routes all requests)
+  kong:
+    image: kong:3.4-alpine
+    container_name: gama_kong
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth:
+        condition: service_started
+      rest:
+        condition: service_started
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_PORT: 5432
+      KONG_PG_USER: postgres
+      KONG_PG_PASSWORD: postgres
+      KONG_PROXY_ACCESS_LOG: /dev/null
+      KONG_ADMIN_ACCESS_LOG: /dev/null
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    networks:
+      - supabase_network
+    volumes:
+      - ./supabase/kong.yml:/home/kong/kong.yml:ro
+    command: kong start --conf /home/kong/kong.yml
+
+  # Supabase Functions (Edge Functions)
+  functions:
+    image: supabase/functions:latest
+    container_name: gama_functions
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY4ODIzNDYwMCwiZXhwIjoxODk2MDk0NjAwfQ.N5Y-hKk05hhTd9ufFdC5WEQvKdKNQq5C_dFGJ5WNr2U
+      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjg4MjM0NjAwLCJleHAiOjE4OTYwOTQ2MDB9.sL4EJp7PVaX8Kx3PwdE9c5R7f4L5S6K1x9Z2V1B5Y3A
+    ports:
+      - "9000:9000"
+    networks:
+      - supabase_network
+    volumes:
+      - ./supabase/functions:/home/deno/functions
+
+networks:
+  supabase_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgvector_data:
+  storage_data:

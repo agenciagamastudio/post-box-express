@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { type NetworkType, type FormatType, type StatusType } from "@/types/posts";
 
 type Props = {
   open: boolean;
@@ -32,9 +33,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
   const [clientId, setClientId] = useState<string>("");
-  const [network, setNetwork] = useState("instagram");
-  const [format, setFormat] = useState("feed");
-  const [status, setStatus] = useState("rascunho");
+  const [network, setNetwork] = useState<NetworkType>("instagram");
+  const [format, setFormat] = useState<FormatType>("feed");
+  const [status, setStatus] = useState<StatusType>("rascunho");
   const [scheduledAt, setScheduledAt] = useState("");
   const [coverUrl, setCoverUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
@@ -126,9 +127,9 @@ export function PostDialog({ open, onOpenChange, postId }: Props) {
         title,
         caption,
         client_id: clientId,
-        network: network as any,
-        format: format as any,
-        status: status as any,
+        network,
+        format,
+        status,
         scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
         cover_url: coverUrl || null,
         created_by: u.user.id,
